@@ -17,15 +17,16 @@
 
     <md-tab label="Посты">
       <md-card *ngFor="let post of posts">
-        <img *ngIf="post.attachment.type === 'link'" md-card-image src="{{post.attachment.link.image_big}}" alt="">
-        <img *ngIf="post.attachment.type === 'photo'" md-card-image src="{{post.attachment.photo.src_big}}" alt="">
-
+      <md-card-header>
+        <md-card-subtitle>{{post.date}}</md-card-subtitle>
+      </md-card-header>
         <md-card-content>
           <p>
             {{ post.text }}
           </p>
         </md-card-content>
-
+        <img *ngIf="post.attachment.type === 'link'" md-card-image src="{{post.attachment.link.image_big}}" alt="">
+        <img *ngIf="post.attachment.type === 'photo'" md-card-image src="{{post.attachment.photo.src_big}}" alt="">
         <md-card-actions>
           <button md-button>
             <i class="material-icons md-18"> visibility </i> ПОСМОТРЕТЬ ОРИГИНАЛ

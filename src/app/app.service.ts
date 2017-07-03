@@ -2,13 +2,14 @@ import * as fetchJsonp from 'fetch-jsonp';
 
 
 export class AppService {
-    getWallPosts({owner_id, user_access_token}) {
+    getWallPosts({owner_id, user_access_token, count}) {
         const url = `
         https://api.vk.com/api.php?
             oauth=1&
             method=wall.get&
             owner_id=${owner_id}&
-            offset=0&count=10&
+            offset=0&
+            count=${count}&
             filter=all&
             access_token=${user_access_token}`.replace(/ /g, '');
 
@@ -18,6 +19,7 @@ export class AppService {
                 .then( response => response.json())
                 .then( ({ response }) => {
                             const [length, ...posts] = response;
+                            console.log(posts);
                             return {length, posts};
                         })
                 .catch( ex => console.log('parsing failed', ex) );
