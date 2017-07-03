@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { MaterialModule } from '@angular/material';
+import { FormsModule } from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
@@ -25,6 +26,7 @@ import { FeedComponent } from './feed/feed.component';
     BrowserModule,
     MaterialModule,
     BrowserAnimationsModule,
+    FormsModule,
     routing
   ],
   providers: [ AppService, AuthService, appRoutingProviders ],

@@ -13,15 +13,16 @@ import { AuthService } from '../auth/auth.service';
 export class FeedComponent implements OnInit {
   posts;
   cookie;
+  selectedTab = 1;
   url_to_get_token = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=localhost:4200/auth&response_type=token';
   constructor(private appService: AppService,
               private authService: AuthService) {}
 
-  ngOnInit() {
+  showContent({owner_id, user_id, count, user_access_token}) {
     if (this.authService.loggedIn()) {
       this.appService.getWallPosts({
-        owner_id: -87396564,
-        user_access_token: this.authService.cookies.access_token })
+        owner_id: owner_id,
+        user_access_token: user_access_token })
           .then((response: any) => {
             this.posts = response.posts;
             console.log(this.posts);
@@ -32,5 +33,18 @@ export class FeedComponent implements OnInit {
           })
           .catch((e) => { console.log(e) });
       }
-    }
+  }
+
+  submitForm(event: Event, data: any) {
+    event.preventDefault();
+    console.log(data);
+    this.showContent({
+      owner_id: data.group_id,
+      user_id: data.user_id,
+      count: data.count,
+      user_access_token: this.authService.cookies.access_token});
+    this.selectedTab = 0;
+  }
+
+  ngOnInit() {}
 }

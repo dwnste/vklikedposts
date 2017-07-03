@@ -13,7 +13,7 @@
       Для взаимодействия с данными VK.com требуется авторизация!
     </span>
   </md-card>
-  <md-tab-group *ngIf="authService.loggedIn()">
+  <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
 
     <md-tab label="Посты">
       <md-card *ngFor="let post of posts">
@@ -38,21 +38,23 @@
 
     <md-tab label="Настройки">
       <md-card>
-        <form action="">
+        <form novalidate (submit)="submitForm($event, form.value)" #form="ngForm">
           <md-input-container class="md-block">
-            <input mdInput placeholder="Пользователь" value="">
+            <input mdInput ngModel name="user_id" placeholder="Пользователь" value="">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
           <md-input-container class="md-block">
-            <input mdInput placeholder="Сообщество" value="">
+            <input mdInput ngModel name="group_id" placeholder="Сообщество" value="">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
           <md-input-container class="md-block">
-            <input mdInput placeholder="Кол-во постов" value="">
+            <input mdInput type="number" ngModel name="posts_count" placeholder="Кол-во постов" value="">
           </md-input-container>
           <div class="md-errors-spacer"></div>
+
+          <button md-raised-button color="primary" type="submit">Найти</button>
         </form>
       </md-card>
 
