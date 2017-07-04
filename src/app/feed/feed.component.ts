@@ -19,9 +19,7 @@ export class FeedComponent implements OnInit {
   posts = [];
   timer = 0;
   counter = 0;
-  cookie;
   selectedTab = 1;
-  url_to_get_token = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=localhost:4200/auth&response_type=token';
   constructor(private appService: AppService,
               private authService: AuthService) {}
 

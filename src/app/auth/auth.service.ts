@@ -5,6 +5,8 @@ import { Observable } from 'rxjs/Observable';
 
 import * as qs from 'query-string';
 
+const GET_TOKEN_URL = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=localhost:4200/auth&response_type=token';
+
 @Injectable()
 export class AuthService {
 
@@ -27,6 +29,10 @@ export class AuthService {
     this.update();
   }
 
+  login() {
+    document.location.href = GET_TOKEN_URL;
+  }
+
   logout() {
     this.removeCookie('access_token');
     this.update();
@@ -37,7 +43,7 @@ export class AuthService {
       return 'access_token' in this.cookies ? true : false;
   }
 
-  login() {
+  getAndSetCookie() {
     const routeFragment: Observable<string> = this.activatedRoute.fragment;
     routeFragment.subscribe(fragment => {
       if (('access_token' && 'user_id' && 'expires_in') in qs.parse(fragment)) {

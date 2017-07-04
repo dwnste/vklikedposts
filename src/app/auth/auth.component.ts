@@ -19,7 +19,7 @@ export class AuthComponent implements OnInit {
               private authService: AuthService) {}
 
   ngOnInit() {
-    this.authService.login();
+    this.authService.getAndSetCookie();
   }
 
 }

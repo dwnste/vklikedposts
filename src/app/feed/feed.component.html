@@ -10,7 +10,7 @@
     </span>
     <button md-icon-button>
       <a *ngIf="authService.loggedIn()" (click)="authService.logout()">Log Out</a>
-      <a *ngIf="!authService.loggedIn()" href="{{url_to_get_token}}">Log In</a>
+      <a *ngIf="!authService.loggedIn()" (click)="authService.login()">Log In</a>
     </button>
   </md-toolbar>
   <md-card *ngIf="!authService.loggedIn()">
@@ -20,10 +20,13 @@
   </md-card>
   <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
 
-    <md-tab label="Посты" (select)="selectedTab = 0">
+    <md-tab label="Посты">
       <md-card *ngFor="let post of posts">
       <md-card-header>
-        <md-card-subtitle>{{post.date}}</md-card-subtitle>
+        <md-card-title>{{post.date}}</md-card-title>
+        <md-card-subtitle *ngIf="post.reposted === 1">
+          <i class="material-icons md-18"> reply </i> репост
+        </md-card-subtitle>
       </md-card-header>
         <img *ngIf="post.attachment && post.attachment.type === 'link'" md-card-image src="{{post.attachment.link.image_big}}" alt="">
         <img *ngIf="post.attachment && post.attachment.type === 'photo'" md-card-image src="{{post.attachment.photo.src_big}}" alt="">
@@ -34,7 +37,7 @@
         </md-card-content>
         <md-card-actions>
           <button (click)="showOriginal(post)" md-button>
-            <i class="material-icons md-18"> visibility </i> ПОСМОТРЕТЬ ОРИГИНАЛ
+            <i class="material-icons md-18"> visibility </i> ОРИГИНАЛ
           </button>
         </md-card-actions>
 
@@ -42,7 +45,7 @@
 
     </md-tab>
 
-    <md-tab label="Настройки" (select)="selectedTab = 1">
+    <md-tab label="Настройки">
       <md-card>
         <form novalidate (submit)="submitForm($event, form.value)" #form="ngForm">
           <md-input-container class="md-block">
