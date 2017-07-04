@@ -3,6 +3,28 @@ a {
     color: #fff;
 }
 
+i {
+  // required
+  font-family: 'Material Icons';
+  font-feature-settings: 'liga';
+  font-weight: normal;
+  font-style: normal;
+  font-size:inherit;
+  line-height:inherit;
+  vertical-align: top;
+  display: inline-block;
+  // resetters
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+  // optimizers
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 md-card {
     width: 600px;
     margin: 5px auto;

@@ -13,13 +13,10 @@ export class AppService {
             filter=all&
             access_token=${user_access_token}`.replace(/ /g, '');
 
-            console.log(url);
-
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => {
                             const [length, ...posts] = response;
-                            console.log(posts);
                             return {length, posts};
                         })
                 .catch( ex => console.log('parsing failed', ex) );
@@ -40,8 +37,7 @@ export class AppService {
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => {
-                            const [liked, copied] = response;
-                            return {liked, copied};
+                            return response;
                         })
                 .catch( ex => console.log('parsing failed', ex) );
     };
