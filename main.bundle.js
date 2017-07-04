@@ -307,6 +307,7 @@ var _a, _b;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_ng2_cookies_ng2_cookies___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_ng2_cookies_ng2_cookies__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_query_string__ = __webpack_require__("../../../../query-string/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_query_string___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_query_string__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__environments_environment__ = __webpack_require__("../../../../../src/environments/environment.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AuthService; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -321,7 +322,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var GET_TOKEN_URL = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=https://dwnste.github.io/vklikedposts/auth&response_type=token';
+
 var AuthService = (function () {
     function AuthService(activatedRoute, router) {
         this.activatedRoute = activatedRoute;
@@ -341,7 +342,7 @@ var AuthService = (function () {
         this.update();
     };
     AuthService.prototype.login = function () {
-        document.location.href = GET_TOKEN_URL;
+        document.location.href = __WEBPACK_IMPORTED_MODULE_4__environments_environment__["a" /* environment */].get_token_url;
     };
     AuthService.prototype.logout = function () {
         this.removeCookie('access_token');
@@ -381,7 +382,7 @@ var _a, _b;
 /***/ "../../../../../src/app/feed/feed.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button>\n      <a *ngIf=\"authService.loggedIn()\" (click)=\"authService.logout()\">Log Out</a>\n      <a *ngIf=\"!authService.loggedIn()\" (click)=\"authService.login()\">Log In</a>\n    </button>\n  </md-toolbar>\n  <md-card *ngIf=\"!authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"authService.loggedIn()\">\n\n    <md-tab label=\"Посты\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Настройки\">\n      <md-card>\n        <form novalidate (submit)=\"submitForm($event, form.value)\" #form=\"ngForm\">\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"user_id\" placeholder=\"Пользователь\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"group_id\" placeholder=\"ID\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n          <!--\n          <md-radio-group name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"id\">ID</md-radio-button>\n            <md-radio-button value=\"domain\">Короткий адрес</md-radio-button>\n          </md-radio-group>\n          -->\n          <md-input-container class=\"md-block\">\n            <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <button md-raised-button color=\"primary\" [disabled]=\"!form.valid\" type=\"submit\">Найти</button>\n        </form>\n      </md-card>\n\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
+module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button>\n      <a *ngIf=\"authService.loggedIn()\" (click)=\"authService.logout()\">Log Out</a>\n      <a *ngIf=\"!authService.loggedIn()\" (click)=\"authService.login()\">Log In</a>\n    </button>\n  </md-toolbar>\n  <md-card *ngIf=\"!authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"authService.loggedIn()\">\n\n    <md-tab label=\"Посты\" *ngIf=\"posts.length\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Настройки\">\n      <md-card>\n        <form novalidate (submit)=\"submitForm($event, form.value)\" #form=\"ngForm\">\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"user_id\" placeholder=\"ID кого искать\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"group_id\" placeholder=\"ID где искать\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n          <!--\n          <md-radio-group name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"id\">ID</md-radio-button>\n            <md-radio-button value=\"domain\">Короткий адрес</md-radio-button>\n          </md-radio-group>\n          -->\n          <md-input-container class=\"md-block\">\n            <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <button md-raised-button color=\"primary\" [disabled]=\"!form.valid\" type=\"submit\">Найти</button>\n        </form>\n      </md-card>\n\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
 
 /***/ }),
 
@@ -444,32 +445,37 @@ var FeedComponent = (function () {
             })
                 .catch(function (e) { console.log(e); })
                 .then(function (response) {
-                var timeOut = 0;
-                response.posts.map(function (post) {
-                    timeOut += _this.TIMEOUT_STEP;
-                    setTimeout(function () {
-                        _this.appService
-                            .isLiked({
-                            user_id: user_id,
-                            type: 'post',
-                            owner_id: owner_id,
-                            item_id: post.id,
-                            user_access_token: user_access_token
-                        })
-                            .then(function (isliked_response) {
-                            _this.counter += 1;
-                            if (isliked_response && 'liked' in isliked_response) {
-                                if (Boolean(isliked_response.liked)) {
-                                    _this.posts.push(_this.appService.formatPost(post, isliked_response));
+                if ('posts' in response) {
+                    var timeOut_1 = 0;
+                    response.posts.map(function (post) {
+                        timeOut_1 += _this.TIMEOUT_STEP;
+                        setTimeout(function () {
+                            _this.appService
+                                .isLiked({
+                                user_id: user_id,
+                                type: 'post',
+                                owner_id: owner_id,
+                                item_id: post.id,
+                                user_access_token: user_access_token
+                            })
+                                .then(function (isliked_response) {
+                                _this.counter += 1;
+                                if (isliked_response && 'liked' in isliked_response) {
+                                    if (Boolean(isliked_response.liked)) {
+                                        _this.posts.push(_this.appService.formatPost(post, isliked_response));
+                                    }
                                 }
-                            }
-                            else {
-                                console.log('problems with getting response, skipped');
-                            }
-                        });
-                    }, timeOut);
-                });
-                _this.timer = timeOut;
+                                else {
+                                    console.log('problems with getting response, skipped');
+                                }
+                            });
+                        }, timeOut_1);
+                    });
+                    _this.timer = timeOut_1;
+                }
+                else {
+                    console.log(response.error, response.error_description.replace('+', ' '));
+                }
             });
         }
         this.counter = 0;
@@ -512,13 +518,9 @@ var _a, _b;
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return environment; });
-// The file contents for the current environment will overwrite these during build.
-// The build system defaults to the dev environment which uses `environment.ts`, but if you do
-// `ng build --env=prod` then `environment.prod.ts` will be used instead.
-// The list of which env maps to which file can be found in `.angular-cli.json`.
-// The file contents for the current environment will overwrite these during build.
 var environment = {
-    production: false
+    production: false,
+    get_token_url: 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=https://dwnste.github.io/auth&response_type=token'
 };
 //# sourceMappingURL=environment.js.map
 
