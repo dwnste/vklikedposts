@@ -321,7 +321,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var GET_TOKEN_URL = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=localhost:4200/auth&response_type=token';
+var GET_TOKEN_URL = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=https://dwnste.github.io/vklikedposts/auth&response_type=token';
 var AuthService = (function () {
     function AuthService(activatedRoute, router) {
         this.activatedRoute = activatedRoute;
