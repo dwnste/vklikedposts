@@ -5,10 +5,6 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { AppService } from '../app.service';
 import { AuthService } from '../auth/auth.service';
 
-import * as moment from 'moment';
-
-moment.locale('ru');
-
 @Component({
   selector: 'app-feed',
   templateUrl: './feed.component.html',
@@ -23,7 +19,7 @@ export class FeedComponent implements OnInit {
   constructor(private appService: AppService,
               private authService: AuthService) {}
 
-  showContent({owner_id, user_id, count, user_access_token}) {
+  getAndFilterPosts({owner_id, user_id, count, user_access_token}) {
     if (this.authService.loggedIn()) {
       this.appService.getWallPosts({
         owner_id: owner_id,
@@ -48,13 +44,8 @@ export class FeedComponent implements OnInit {
                     this.counter += 1;
 
                     if (isliked_response && 'liked' in isliked_response) {
-                      if (isliked_response.liked === 1) {
-                        // FIXME
-                        post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
-                        post.date = moment(post.date * 1000).format('LL');
-                        post.reposted = isliked_response.copied;
-
-                        this.posts.push(post);
+                      if (Boolean(isliked_response.liked)) {
+                        this.posts.push(this.appService.formatPost(post, isliked_response));
                       }
                     } else {
                       console.log('problems with getting response, skipped')
@@ -78,7 +69,7 @@ export class FeedComponent implements OnInit {
     this.posts = [];
     event.preventDefault();
     this.selectedTab = 0;
-    this.showContent({
+    this.getAndFilterPosts({
       owner_id: data.group_id,
       user_id: data.user_id,
       count: data.posts_count,

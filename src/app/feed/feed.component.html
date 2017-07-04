@@ -3,7 +3,7 @@
 
   <md-toolbar color="primary">
     <span>
-      VK Liked Posts
+      <a [routerLink]="['/']">VK Liked Posts</a>
       <span *ngIf="((timer - counter * TIMEOUT_STEP) / 1000) > 0"> | 
         <i class="material-icons md-18"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}
       </span>

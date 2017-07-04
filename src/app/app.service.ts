@@ -1,5 +1,7 @@
 import * as fetchJsonp from 'fetch-jsonp';
+import * as moment from 'moment';
 
+moment.locale('ru');
 
 export class AppService {
     getWallPosts({owner_id, user_access_token, count}) {
@@ -41,4 +43,11 @@ export class AppService {
                         })
                 .catch( ex => console.log('parsing failed', ex) );
     };
+
+    formatPost(post, response) {
+        post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
+        post.date = moment(post.date * 1000).format('LL');
+        post.reposted = response.copied;
+        return post;
+    }
 }
