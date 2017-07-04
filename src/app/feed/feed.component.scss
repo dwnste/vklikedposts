@@ -3,6 +3,10 @@ a {
     color: #fff;
 }
 
+form {
+    width: 100%;
+}
+
 i {
     // required
     font-family: 'Material Icons';
@@ -26,6 +30,17 @@ i {
 }
 
 md-card {
-    width: 600px;
-    margin: 5px auto;
+    width: 100%;
+}
+
+@media (min-width: 700px) {
+    md-card {
+        width: 600px;
+        margin: 5px auto;
+    }
+
+    form {
+        margin: 0 auto;
+        width: 200px;
+    }
 }

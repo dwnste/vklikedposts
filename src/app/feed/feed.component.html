@@ -5,7 +5,7 @@
     <span>
       VK Liked Posts
       <span *ngIf="((timer - counter * TIMEOUT_STEP) / 1000) > 0"> | 
-        <i class="material-icons md-18"> alarm </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}
+        <i class="material-icons md-18"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}
       </span>
     </span>
     <button md-icon-button>
@@ -49,17 +49,22 @@
       <md-card>
         <form novalidate (submit)="submitForm($event, form.value)" #form="ngForm">
           <md-input-container class="md-block">
-            <input mdInput ngModel name="user_id" placeholder="Пользователь" required>
+            <input mdInput ngModel required name="user_id" placeholder="Пользователь" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
           <md-input-container class="md-block">
-            <input mdInput ngModel name="group_id" placeholder="Сообщество" required>
+            <input mdInput ngModel required name="group_id" placeholder="ID" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
-
+          <!--
+          <md-radio-group name="radio" [(ngModel)]="radio">
+            <md-radio-button value="id">ID</md-radio-button>
+            <md-radio-button value="domain">Короткий адрес</md-radio-button>
+          </md-radio-group>
+          -->
           <md-input-container class="md-block">
-            <input mdInput type="number" min="1" ngModel name="posts_count" placeholder="Кол-во постов" required>
+            <input mdInput min="1" ngModel required name="posts_count" placeholder="Кол-во постов" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
