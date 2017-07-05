@@ -4,6 +4,42 @@ import * as moment from 'moment';
 moment.locale('ru');
 
 export class AppService {
+    getUserData({user_id, user_access_token}) {
+        const url = `
+            https://api.vk.com/api.php?
+                oauth=1&
+                method=users.get&
+                user_ids=${user_id}&
+                name_case=Nom&
+                fields=photo_50,online&
+                access_token=${user_access_token}`.replace(/ /g, '');
+
+        return fetchJsonp(url)
+                .then( response => response.json())
+                .then( ({ response }) => response)
+                .catch( ex => console.log('parsing failed', ex) );
+    };
+
+    getUserGroups({user_id, user_access_token, count}) {
+        const url = `
+        https://api.vk.com/api.php?
+            oauth=1&
+            extended=1&
+            method=groups.get&
+            user_id=${user_id}&
+            offset=0&
+            count=${count}&
+            access_token=${user_access_token}`.replace(/ /g, '');
+
+        return fetchJsonp(url)
+                .then( response => response.json())
+                .then( ({ response }) => {
+                            const [length, ...groups] = response;
+                            return {length, groups};
+                        })
+                .catch( ex => console.log('parsing failed', ex) );
+    };
+
     getWallPosts({owner_id, user_access_token, count}) {
         const url = `
         https://api.vk.com/api.php?

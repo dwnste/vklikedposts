@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 
 import * as qs from 'query-string';
 
-const GET_TOKEN_URL = 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=localhost:4200/auth&response_type=token';
+import { environment } from '../../environments/environment';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   login() {
-    document.location.href = GET_TOKEN_URL;
+    document.location.href = environment.get_token_url;
   }
 
   logout() {

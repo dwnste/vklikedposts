@@ -9,18 +9,18 @@
       </span>
     </span>
     <button md-icon-button>
-      <a *ngIf="authService.loggedIn()" (click)="authService.logout()">Log Out</a>
-      <a *ngIf="!authService.loggedIn()" (click)="authService.login()">Log In</a>
+      <a *ngIf="this.authService.loggedIn()" (click)="this.authService.logout()">Log Out</a>
+      <a *ngIf="!this.authService.loggedIn()" (click)="this.authService.login()">Log In</a>
     </button>
   </md-toolbar>
-  <md-card *ngIf="!authService.loggedIn()">
+  <md-card *ngIf="!this.authService.loggedIn()">
     <span>
       Для взаимодействия с данными VK.com требуется авторизация!
     </span>
   </md-card>
-  <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
+  <md-tab-group [selectedIndex]="selectedTab" *ngIf="this.authService.loggedIn()">
 
-    <md-tab label="Посты">
+    <md-tab label="Посты" *ngIf="posts.length">
       <md-card *ngFor="let post of posts">
       <md-card-header>
         <md-card-title>{{post.date}}</md-card-title>
@@ -45,18 +45,39 @@
 
     </md-tab>
 
-    <md-tab label="Настройки">
+    <md-tab label="Пользователь">
       <md-card>
-        <form novalidate (submit)="submitForm($event, form.value)" #form="ngForm">
+        <form novalidate (submit)="submitUserForm($event, userForm.value)" #userForm="ngForm">
           <md-input-container class="md-block">
-            <input mdInput ngModel required name="user_id" placeholder="Пользователь" type="number">
+            <input mdInput ngModel required name="user_id" placeholder="ID кого искать" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
+          <button md-raised-button color="primary" [disabled]="!userForm.valid" type="submit">Найти</button>
+        </form>
+      </md-card>
+
+    </md-tab>
+
+    <md-tab label="Поиск лайков" *ngIf="currentUser.uid">
+      <md-card>
+        <md-card-header>
+          <div md-card-avatar><img src="{{currentUser.photo_50}}" alt=""></div>
+          <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>
+          <md-card-subtitle *ngIf="currentUser.online === 1">Online</md-card-subtitle>
+        </md-card-header>
+        <form novalidate (submit)="submitLikeForm($event, wallForm)" #wallForm="ngForm">
           <md-input-container class="md-block">
-            <input mdInput ngModel required name="group_id" placeholder="ID" type="number">
+            <input mdInput ngModel required name="group_id" placeholder="ID где искать" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
+
+          <md-select style="width: 100%" placeholder="Группы пользователя">
+            <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid">
+              <img style="width: 30px; height: 30px; margin: auto auto" src="{{group.photo}}">
+              {{group.name}}
+            </md-option>
+          </md-select>
           <!--
           <md-radio-group name="radio" [(ngModel)]="radio">
             <md-radio-button value="id">ID</md-radio-button>
@@ -68,10 +89,9 @@
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
-          <button md-raised-button color="primary" [disabled]="!form.valid" type="submit">Найти</button>
+          <button md-raised-button color="primary" [disabled]="!wallForm.valid" type="submit">Найти</button>
         </form>
       </md-card>
-
     </md-tab>
 
   </md-tab-group>

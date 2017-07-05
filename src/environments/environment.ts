@@ -4,5 +4,6 @@
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  get_token_url: 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=http://localhost:4200/auth&response_type=token'
 };
