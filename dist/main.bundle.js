@@ -187,7 +187,9 @@ var AppService = (function () {
     }
     AppService.prototype.getUserData = function (_a) {
         var user_id = _a.user_id, user_access_token = _a.user_access_token;
-        var url = ("\n            https://api.vk.com/api.php?\n                oauth=1&\n                method=users.get&\n                user_ids=" + user_id + "&\n                name_case=Nom&\n                fields=photo_50,online&\n                access_token=" + user_access_token).replace(/ /g, '');
+        var url = ("\n            https://api.vk.com/api.php?\n                oauth=1&\n                method=users.get&\n                user_ids=" + user_id + "&\n                name_case=Nom&\n                fields=photo_50,online&\n                access_token=" + user_access_token)
+            .replace(/ /g, '')
+            .replace(/\n/g, '');
         return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
             .then(function (response) { return response.json(); })
             .then(function (_a) {
@@ -199,7 +201,9 @@ var AppService = (function () {
     ;
     AppService.prototype.getUserGroups = function (_a) {
         var user_id = _a.user_id, user_access_token = _a.user_access_token, count = _a.count, _b = _a.offset, offset = _b === void 0 ? 0 : _b;
-        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            extended=1&\n            method=groups.get&\n            user_id=" + user_id + "&\n            offset=" + offset + "&\n            count=" + count + "&\n            access_token=" + user_access_token).replace(/ /g, '');
+        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            extended=1&\n            method=groups.get&\n            user_id=" + user_id + "&\n            offset=" + offset + "&\n            count=" + count + "&\n            access_token=" + user_access_token)
+            .replace(/ /g, '')
+            .replace(/\n/g, '');
         return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
             .then(function (response) { return response.json(); })
             .then(function (_a) {
@@ -212,7 +216,9 @@ var AppService = (function () {
     ;
     AppService.prototype.getWallPosts = function (_a) {
         var owner_id = _a.owner_id, user_access_token = _a.user_access_token, count = _a.count;
-        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            method=wall.get&\n            owner_id=" + owner_id + "&\n            offset=0&\n            count=" + count + "&\n            filter=all&\n            access_token=" + user_access_token).replace(/ /g, '');
+        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            method=wall.get&\n            owner_id=" + owner_id + "&\n            offset=0&\n            count=" + count + "&\n            filter=all&\n            access_token=" + user_access_token)
+            .replace(/ /g, '')
+            .replace(/\n/g, '');
         return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
             .then(function (response) { return response.json(); })
             .then(function (_a) {
@@ -228,7 +234,8 @@ var AppService = (function () {
     ;
     AppService.prototype.isLiked = function (_a) {
         var user_id = _a.user_id, _b = _a.type, type = _b === void 0 ? 'post' : _b, owner_id = _a.owner_id, item_id = _a.item_id, user_access_token = _a.user_access_token;
-        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            method=likes.isLiked&v=5.65&\n            user_id=" + user_id + "&\n            type=" + type + "&\n            owner_id=" + owner_id + "&\n            item_id=" + item_id + "&\n            access_token=" + user_access_token + "\n            ").replace(/ /g, '');
+        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            method=likes.isLiked&v=5.65&\n            user_id=" + user_id + "&\n            type=" + type + "&\n            owner_id=" + owner_id + "&\n            item_id=" + item_id + "&\n            access_token=" + user_access_token + "\n            ").replace(/ /g, '')
+            .replace(/\n/g, '');
         return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
             .then(function (response) { return response.json(); })
             .then(function (_a) {
@@ -577,7 +584,6 @@ var FeedComponent = (function () {
                         count: 100 })
                         .then(function (groups_response) {
                         _this.groupsAvailable = groups_response.available;
-                        console.log(_this.groupsAvailable);
                         var groupList = groups_response.groups.filter(function (group) {
                             if (!group.deactivated) {
                                 return group;
