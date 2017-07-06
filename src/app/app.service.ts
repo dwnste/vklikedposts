@@ -16,8 +16,6 @@ export class AppService {
                 .replace(/ /g, '')
                 .replace(/\n/g, '');
 
-        console.log(url);
-
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => response)
