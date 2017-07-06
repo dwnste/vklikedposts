@@ -60,6 +60,10 @@ export class FeedComponent implements OnInit {
 
                       if (this.counter === response.posts.length) {
                         this.searchingIsRunning = false;
+
+                        if (!this.posts.length) {
+                          this.snackBar.open('Ни одного поста с лайком', 'ОК');
+                        }
                       }
                     });
                 }, timeOut);
