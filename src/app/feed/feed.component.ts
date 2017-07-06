@@ -130,7 +130,6 @@ export class FeedComponent implements OnInit {
                                 count: 100})
                   .then((groups_response: any) => {
                     this.groupsAvailable = groups_response.available;
-                    console.log(this.groupsAvailable);
                     const groupList = groups_response.groups.filter((group) => {
                       if (!group.deactivated) {
                         return group;

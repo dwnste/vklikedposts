@@ -12,7 +12,11 @@ export class AppService {
                 user_ids=${user_id}&
                 name_case=Nom&
                 fields=photo_50,online&
-                access_token=${user_access_token}`.replace(/ /g, '');
+                access_token=${user_access_token}`
+                .replace(/ /g, '')
+                .replace(/\n/g, '');
+
+        console.log(url);
 
         return fetchJsonp(url)
                 .then( response => response.json())
@@ -29,7 +33,9 @@ export class AppService {
             user_id=${user_id}&
             offset=${offset}&
             count=${count}&
-            access_token=${user_access_token}`.replace(/ /g, '');
+            access_token=${user_access_token}`
+                .replace(/ /g, '')
+                .replace(/\n/g, '');
 
         return fetchJsonp(url)
                 .then( response => response.json())
@@ -49,7 +55,9 @@ export class AppService {
             offset=0&
             count=${count}&
             filter=all&
-            access_token=${user_access_token}`.replace(/ /g, '');
+            access_token=${user_access_token}`
+                .replace(/ /g, '')
+                .replace(/\n/g, '');
 
         return fetchJsonp(url)
                 .then( response => response.json())
@@ -73,7 +81,8 @@ export class AppService {
             owner_id=${owner_id}&
             item_id=${item_id}&
             access_token=${user_access_token}
-            `.replace(/ /g, '');
+            `.replace(/ /g, '')
+             .replace(/\n/g, '');
 
         return fetchJsonp(url)
                 .then( response => response.json())
