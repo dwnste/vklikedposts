@@ -54,8 +54,11 @@ export class AppService {
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => {
-                            const [length, ...posts] = response;
-                            return {length, posts};
+                            if (response) {
+                                const [length, ...posts] = response;
+                                return {length, posts};
+                            }
+                            return null;
                         })
                 .catch( ex => console.log('parsing failed', ex) );
     };

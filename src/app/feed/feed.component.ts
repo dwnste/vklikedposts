@@ -12,14 +12,16 @@ import { AuthService } from '../auth/auth.service';
 })
 export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
-  currentUser = {uid: false};
+  currentUser = <any>{};
   currentUserGroups = [];
+  radio = 'user_groups' // 'other_groups'
   posts = [];
   timer = 0;
   counter = 0;
   selectedTab = 1;
   constructor(private appService: AppService,
-              public authService: AuthService) {}
+              public authService: AuthService,
+              public snackBar: MdSnackBar) {}
 
   getAndFilterPosts({owner_id, user_id, count, user_access_token}) {
     if (this.authService.loggedIn()) {
@@ -29,7 +31,7 @@ export class FeedComponent implements OnInit {
         user_access_token: user_access_token })
           .catch((e) => { console.log(e) })
           .then((response: any) => {
-            if ('posts' in response) {
+            if (response) {
               let timeOut = 0;
               response.posts.map((post) => {
                 timeOut += this.TIMEOUT_STEP;
@@ -58,7 +60,7 @@ export class FeedComponent implements OnInit {
               });
               this.timer = timeOut;
             } else {
-              console.log(response.error, response.error_description.replace('+', ' '));
+              this.showError();
             }
           });
       }
@@ -71,32 +73,58 @@ export class FeedComponent implements OnInit {
     }
   }
 
+  showError(error?, error_description?) {
+    this.snackBar.open('Что-то пошло не так', 'ОК');
+    console.log('No response, sorry');
+  }
+
+  submitUserForm(event: Event, data: any) {
+    event.preventDefault();
+    this.getUserAndUserGroups({user_id: data.user_id, user_access_token: this.authService.cookies.access_token});
+  }
+
   submitWallForm(event: Event, data: any) {
     this.posts = [];
     event.preventDefault();
     this.selectedTab = 0;
     this.getAndFilterPosts({
-      owner_id: data.group_id,
-      user_id: data.user_id,
-      count: data.posts_count,
+      owner_id: data.form.value.group_id,
+      user_id: this.currentUser.uid,
+      count: data.form.value.posts_count,
       user_access_token: this.authService.cookies.access_token});
+  }
+
+  getUserAndUserGroups({user_id, user_access_token}) {
+    this.appService
+      .getUserData({user_id: user_id, user_access_token: user_access_token})
+        .then((response) => {
+          if (!response) {
+            this.showError();
+          } else {
+            this.currentUser = response[0];
+            if ('deactivated' in this.currentUser) {
+              this.snackBar.open(`Профиль имеет статус: ${this.currentUser.deactivated}`, 'OK')
+            } else {
+              this.appService
+                .getUserGroups({user_id: this.currentUser.uid,
+                                user_access_token: this.authService.cookies.access_token,
+                                count: 100})
+                  .then((groups_response: any) => {
+                    this.currentUserGroups = groups_response.groups;
+                  })
+            }
+          }
+        });
+  }
+
+  backToUserForm(event: Event) {
+    event.preventDefault();
+    this.posts = [];
+    this.currentUser = null;
+    this.currentUserGroups = null;
   }
 
   ngOnInit() {
     this.authService.update();
-
-    this.appService
-      .getUserData({user_id: 'mutantsixtyfour', user_access_token: this.authService.cookies.access_token})
-        .then((response) => {
-          this.currentUser = response[0];
-          this.appService
-            .getUserGroups({user_id: this.currentUser.uid,
-                            user_access_token: this.authService.cookies.access_token,
-                            count: 100})
-              .then((groups_response: any) => {
-                console.log(groups_response.groups)
-                this.currentUserGroups = groups_response.groups;
-              })
-        });
   }
 }

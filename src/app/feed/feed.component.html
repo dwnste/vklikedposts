@@ -45,7 +45,7 @@
 
     </md-tab>
 
-    <md-tab label="Пользователь">
+    <md-tab label="Пользователь" *ngIf="!currentUser.uid || currentUser.deactivated">
       <md-card>
         <form novalidate (submit)="submitUserForm($event, userForm.value)" #userForm="ngForm">
           <md-input-container class="md-block">
@@ -59,36 +59,36 @@
 
     </md-tab>
 
-    <md-tab label="Поиск лайков" *ngIf="currentUser.uid">
+    <md-tab label="Поиск лайков" *ngIf="currentUser.uid && !currentUser.deactivated">
       <md-card>
         <md-card-header>
           <div md-card-avatar><img src="{{currentUser.photo_50}}" alt=""></div>
           <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>
           <md-card-subtitle *ngIf="currentUser.online === 1">Online</md-card-subtitle>
+          <md-radio-group name="radio" [(ngModel)]="radio">
+            <md-radio-button value="user_groups">Группы пользователя</md-radio-button>
+            <md-radio-button value="other_groups">Другие группы</md-radio-button>
+          </md-radio-group>
         </md-card-header>
-        <form novalidate (submit)="submitLikeForm($event, wallForm)" #wallForm="ngForm">
-          <md-input-container class="md-block">
+
+        <form novalidate (submit)="submitWallForm($event, wallForm)" #wallForm="ngForm">
+          <md-input-container *ngIf="radio === 'other_groups'" class="md-block">
             <input mdInput ngModel required name="group_id" placeholder="ID где искать" type="number">
           </md-input-container>
-          <div class="md-errors-spacer"></div>
 
-          <md-select style="width: 100%" placeholder="Группы пользователя">
-            <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid">
+          <md-select *ngIf="radio === 'user_groups'" ngModel name="group_id" style="width: 100%" placeholder="Группы пользователя">
+            <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid * -1">
               <img style="width: 30px; height: 30px; margin: auto auto" src="{{group.photo}}">
               {{group.name}}
             </md-option>
           </md-select>
-          <!--
-          <md-radio-group name="radio" [(ngModel)]="radio">
-            <md-radio-button value="id">ID</md-radio-button>
-            <md-radio-button value="domain">Короткий адрес</md-radio-button>
-          </md-radio-group>
-          -->
+
           <md-input-container class="md-block">
             <input mdInput min="1" ngModel required name="posts_count" placeholder="Кол-во постов" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
+          <button md-raised-button color="primary" type="button" (click)="backToUserForm($event)">Вернуться</button>
           <button md-raised-button color="primary" [disabled]="!wallForm.valid" type="submit">Найти</button>
         </form>
       </md-card>

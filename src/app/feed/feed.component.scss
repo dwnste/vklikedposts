@@ -35,6 +35,17 @@ md-card {
     &.mat-card {
         padding: 24px 0;
     }
+    md-card-header.mat-card-header {
+        width: 90%;
+        margin: 0 auto;
+    }
+    div.mat-card-avatar{
+        img {
+            border-radius: 20px;
+            width: 100%;
+            height: 100%;
+        }
+    }
 }
 
 md-input-container {
@@ -52,6 +63,7 @@ md-input-container {
 
         div.mat-card-avatar{
             img {
+                border-radius: 20px;
                 width: 100%;
                 height: 100%;
             }
