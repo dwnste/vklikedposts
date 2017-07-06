@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 
@@ -12,6 +12,8 @@ import { AuthService } from '../auth/auth.service';
 })
 export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
+  groupOffset = 0;
+  groupsAvailable = 0;
   currentUser = <any>{};
   currentUserGroups = [];
   searchingIsRunning = false;
@@ -97,6 +99,8 @@ export class FeedComponent implements OnInit {
   }
 
   submitWallForm(event: Event, data: any) {
+    this.groupOffset = 0;
+    this.groupsAvailable = 0;
     this.posts = [];
     this.timer = 0;
     this.counter = 0;
@@ -125,6 +129,8 @@ export class FeedComponent implements OnInit {
                                 user_access_token: this.authService.cookies.access_token,
                                 count: 100})
                   .then((groups_response: any) => {
+                    this.groupsAvailable = groups_response.available;
+                    console.log(this.groupsAvailable);
                     const groupList = groups_response.groups.filter((group) => {
                       if (!group.deactivated) {
                         return group;
@@ -148,6 +154,21 @@ export class FeedComponent implements OnInit {
     this.posts = [];
     this.currentUser = {uid: null};
     this.currentUserGroups = [];
+  }
+
+  getMoreGroups() {
+    this.groupOffset += 100;
+    this.appService
+      .getUserGroups({user_id: this.currentUser.uid,
+                      user_access_token: this.authService.cookies.access_token,
+                      count: 100, offset: this.groupOffset})
+      .then((response: any) => {
+                    const groupList = response.groups.filter((group) => {
+                      if (!group.deactivated) {
+                        this.currentUserGroups.push(group);
+                      }
+                    });
+      })
   }
 
   ngOnInit() {

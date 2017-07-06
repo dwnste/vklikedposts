@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 import { AppComponent } from './app.component';
+import { AuthComponent } from './auth/auth.component';
+import { FeedComponent } from './feed/feed.component';
 
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
@@ -12,9 +14,6 @@ import { AuthService } from './auth/auth.service';
 import 'hammerjs';
 
 import { routing, appRoutingProviders } from './app.routes';
-
-import { AuthComponent } from './auth/auth.component';
-import { FeedComponent } from './feed/feed.component';
 
 @NgModule({
   declarations: [

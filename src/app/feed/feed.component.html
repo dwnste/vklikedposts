@@ -76,11 +76,16 @@
               <input mdInput ngModel required name="group_id" placeholder="ID где искать" type="number">
             </md-input-container>
 
-            <md-select *ngIf="radio === 'user_groups'" required ngModel name="group_id" placeholder="Группы пользователя">
+            <md-select *ngIf="radio === 'user_groups'"
+                        required 
+                        ngModel 
+                        name="group_id"
+                        placeholder="Группы пользователя">
               <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid * -1">
                 <img src="{{group.photo}}">
                 {{group.name}}
               </md-option>
+              <button md-button *ngIf="groupsAvailable >= groupOffset" (click)="getMoreGroups()" style="width: 100%; height: 40px;">Загрузить ещё</button>
             </md-select>
 
             <md-input-container class="md-block">

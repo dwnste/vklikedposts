@@ -20,22 +20,22 @@ export class AppService {
                 .catch( ex => console.log('parsing failed', ex) );
     };
 
-    getUserGroups({user_id, user_access_token, count}) {
+    getUserGroups({user_id, user_access_token, count, offset = 0}) {
         const url = `
         https://api.vk.com/api.php?
             oauth=1&
             extended=1&
             method=groups.get&
             user_id=${user_id}&
-            offset=0&
+            offset=${offset}&
             count=${count}&
             access_token=${user_access_token}`.replace(/ /g, '');
 
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => {
-                            const [length, ...groups] = response;
-                            return {length, groups};
+                            const [available, ...groups] = response;
+                            return {available, groups};
                         })
                 .catch( ex => console.log('parsing failed', ex) );
     };
