@@ -84,13 +84,13 @@ AppComponent = __decorate([
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__("../../../forms/@angular/forms.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_platform_browser_animations__ = __webpack_require__("../../../platform-browser/@angular/platform-browser/animations.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__app_component__ = __webpack_require__("../../../../../src/app/app.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__app_service__ = __webpack_require__("../../../../../src/app/app.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__auth_auth_service__ = __webpack_require__("../../../../../src/app/auth/auth.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_hammerjs__ = __webpack_require__("../../../../hammerjs/hammer.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_hammerjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__app_routes__ = __webpack_require__("../../../../../src/app/app.routes.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__auth_auth_component__ = __webpack_require__("../../../../../src/app/auth/auth.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__feed_feed_component__ = __webpack_require__("../../../../../src/app/feed/feed.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__auth_auth_component__ = __webpack_require__("../../../../../src/app/auth/auth.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__feed_feed_component__ = __webpack_require__("../../../../../src/app/feed/feed.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__app_service__ = __webpack_require__("../../../../../src/app/app.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__auth_auth_service__ = __webpack_require__("../../../../../src/app/auth/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_hammerjs__ = __webpack_require__("../../../../hammerjs/hammer.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_hammerjs__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__app_routes__ = __webpack_require__("../../../../../src/app/app.routes.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppModule; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -119,17 +119,17 @@ AppModule = __decorate([
     __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__angular_core__["b" /* NgModule */])({
         declarations: [
             __WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */],
-            __WEBPACK_IMPORTED_MODULE_10__auth_auth_component__["a" /* AuthComponent */],
-            __WEBPACK_IMPORTED_MODULE_11__feed_feed_component__["a" /* FeedComponent */]
+            __WEBPACK_IMPORTED_MODULE_6__auth_auth_component__["a" /* AuthComponent */],
+            __WEBPACK_IMPORTED_MODULE_7__feed_feed_component__["a" /* FeedComponent */]
         ],
         imports: [
             __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["a" /* BrowserModule */],
             __WEBPACK_IMPORTED_MODULE_2__angular_material__["a" /* MaterialModule */],
             __WEBPACK_IMPORTED_MODULE_4__angular_platform_browser_animations__["a" /* BrowserAnimationsModule */],
             __WEBPACK_IMPORTED_MODULE_3__angular_forms__["a" /* FormsModule */],
-            __WEBPACK_IMPORTED_MODULE_9__app_routes__["a" /* routing */]
+            __WEBPACK_IMPORTED_MODULE_11__app_routes__["a" /* routing */]
         ],
-        providers: [__WEBPACK_IMPORTED_MODULE_6__app_service__["a" /* AppService */], __WEBPACK_IMPORTED_MODULE_7__auth_auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_9__app_routes__["b" /* appRoutingProviders */]],
+        providers: [__WEBPACK_IMPORTED_MODULE_8__app_service__["a" /* AppService */], __WEBPACK_IMPORTED_MODULE_9__auth_auth_service__["a" /* AuthService */], __WEBPACK_IMPORTED_MODULE_11__app_routes__["b" /* appRoutingProviders */]],
         bootstrap: [__WEBPACK_IMPORTED_MODULE_5__app_component__["a" /* AppComponent */]]
     })
 ], AppModule);
@@ -198,14 +198,14 @@ var AppService = (function () {
     };
     ;
     AppService.prototype.getUserGroups = function (_a) {
-        var user_id = _a.user_id, user_access_token = _a.user_access_token, count = _a.count;
-        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            extended=1&\n            method=groups.get&\n            user_id=" + user_id + "&\n            offset=0&\n            count=" + count + "&\n            access_token=" + user_access_token).replace(/ /g, '');
+        var user_id = _a.user_id, user_access_token = _a.user_access_token, count = _a.count, _b = _a.offset, offset = _b === void 0 ? 0 : _b;
+        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            extended=1&\n            method=groups.get&\n            user_id=" + user_id + "&\n            offset=" + offset + "&\n            count=" + count + "&\n            access_token=" + user_access_token).replace(/ /g, '');
         return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
             .then(function (response) { return response.json(); })
             .then(function (_a) {
             var response = _a.response;
-            var length = response[0], groups = response.slice(1);
-            return { length: length, groups: groups };
+            var available = response[0], groups = response.slice(1);
+            return { available: available, groups: groups };
         })
             .catch(function (ex) { return console.log('parsing failed', ex); });
     };
@@ -410,7 +410,7 @@ var _a, _b;
 /***/ "../../../../../src/app/feed/feed.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button *ngIf=\"authService.loggedIn()\" (click)=\"authService.logout()\">Log Out</button>\n    <button md-icon-button *ngIf=\"!authService.loggedIn()\" (click)=\"authService.login()\">Log In</button>\n  </md-toolbar>\n  <md-card *ngIf=\"!authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"authService.loggedIn()\">\n\n    <md-tab label=\"Посты\" *ngIf=\"posts.length\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Пользователь\" *ngIf=\"!currentUser.uid || currentUser.deactivated\">\n      <md-card>\n        <md-card-content>\n          <form novalidate (submit)=\"submitUserForm($event, userForm.value)\" #userForm=\"ngForm\">\n            <md-input-container class=\"md-block\">\n              <input mdInput ngModel required min=\"0\" name=\"user_id\" placeholder=\"ID кого искать\" type=\"number\">\n            </md-input-container>\n            <div class=\"md-errors-spacer\"></div>\n\n            <button md-raised-button color=\"primary\" [disabled]=\"!userForm.valid\" type=\"submit\">Найти</button>\n          </form>\n        </md-card-content>\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Поиск лайков\" *ngIf=\"currentUser.uid && !currentUser.deactivated\">\n      <md-card>\n        <md-card-header>\n          <div md-card-avatar><img src=\"{{currentUser.photo_50}}\" alt=\"\"></div>\n          <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>\n          <md-card-subtitle *ngIf=\"currentUser.online === 1\">Online</md-card-subtitle>\n          <md-radio-group *ngIf=\"currentUserGroups.length\" name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"user_groups\">Группы пользователя</md-radio-button>\n            <md-radio-button value=\"other_groups\">Другие группы</md-radio-button>\n          </md-radio-group>\n        </md-card-header>\n        <md-card-content>\n          <form novalidate (submit)=\"submitWallForm($event, wallForm)\" #wallForm=\"ngForm\">\n            <md-input-container *ngIf=\"radio === 'other_groups'\" class=\"md-block\">\n              <input mdInput ngModel required name=\"group_id\" placeholder=\"ID где искать\" type=\"number\">\n            </md-input-container>\n\n            <md-select *ngIf=\"radio === 'user_groups'\" required ngModel name=\"group_id\" placeholder=\"Группы пользователя\">\n              <md-option mdInput *ngFor=\"let group of currentUserGroups\" [value]=\"group.gid * -1\">\n                <img src=\"{{group.photo}}\">\n                {{group.name}}\n              </md-option>\n            </md-select>\n\n            <md-input-container class=\"md-block\">\n              <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n            </md-input-container>\n            <div class=\"md-errors-spacer\"></div>\n\n            <button md-raised-button color=\"primary\" type=\"button\" [disabled]=\"searchingIsRunning\" (click)=\"backToUserForm($event)\">Вернуться</button>\n            <button md-raised-button color=\"primary\" [disabled]=\"!wallForm.valid || searchingIsRunning\" type=\"submit\">Найти</button>\n          </form>\n        </md-card-content>\n      </md-card>\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
+module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button *ngIf=\"authService.loggedIn()\" (click)=\"authService.logout()\">Log Out</button>\n    <button md-icon-button *ngIf=\"!authService.loggedIn()\" (click)=\"authService.login()\">Log In</button>\n  </md-toolbar>\n  <md-card *ngIf=\"!authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"authService.loggedIn()\">\n\n    <md-tab label=\"Посты\" *ngIf=\"posts.length\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Пользователь\" *ngIf=\"!currentUser.uid || currentUser.deactivated\">\n      <md-card>\n        <md-card-content>\n          <form novalidate (submit)=\"submitUserForm($event, userForm.value)\" #userForm=\"ngForm\">\n            <md-input-container class=\"md-block\">\n              <input mdInput ngModel required min=\"0\" name=\"user_id\" placeholder=\"ID кого искать\" type=\"number\">\n            </md-input-container>\n            <div class=\"md-errors-spacer\"></div>\n\n            <button md-raised-button color=\"primary\" [disabled]=\"!userForm.valid\" type=\"submit\">Найти</button>\n          </form>\n        </md-card-content>\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Поиск лайков\" *ngIf=\"currentUser.uid && !currentUser.deactivated\">\n      <md-card>\n        <md-card-header>\n          <div md-card-avatar><img src=\"{{currentUser.photo_50}}\" alt=\"\"></div>\n          <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>\n          <md-card-subtitle *ngIf=\"currentUser.online === 1\">Online</md-card-subtitle>\n          <md-radio-group *ngIf=\"currentUserGroups.length\" name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"user_groups\">Группы пользователя</md-radio-button>\n            <md-radio-button value=\"other_groups\">Другие группы</md-radio-button>\n          </md-radio-group>\n        </md-card-header>\n        <md-card-content>\n          <form novalidate (submit)=\"submitWallForm($event, wallForm)\" #wallForm=\"ngForm\">\n            <md-input-container *ngIf=\"radio === 'other_groups'\" class=\"md-block\">\n              <input mdInput ngModel required name=\"group_id\" placeholder=\"ID где искать\" type=\"number\">\n            </md-input-container>\n\n            <md-select *ngIf=\"radio === 'user_groups'\"\n                        required \n                        ngModel \n                        name=\"group_id\"\n                        placeholder=\"Группы пользователя\">\n              <md-option mdInput *ngFor=\"let group of currentUserGroups\" [value]=\"group.gid * -1\">\n                <img src=\"{{group.photo}}\">\n                {{group.name}}\n              </md-option>\n              <button md-button *ngIf=\"groupsAvailable >= groupOffset\" (click)=\"getMoreGroups()\" style=\"width: 100%; height: 40px;\">Загрузить ещё</button>\n            </md-select>\n\n            <md-input-container class=\"md-block\">\n              <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n            </md-input-container>\n            <div class=\"md-errors-spacer\"></div>\n\n            <button md-raised-button color=\"primary\" type=\"button\" [disabled]=\"searchingIsRunning\" (click)=\"backToUserForm($event)\">Вернуться</button>\n            <button md-raised-button color=\"primary\" [disabled]=\"!wallForm.valid || searchingIsRunning\" type=\"submit\">Найти</button>\n          </form>\n        </md-card-content>\n      </md-card>\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
 
 /***/ }),
 
@@ -460,6 +460,8 @@ var FeedComponent = (function () {
         this.authService = authService;
         this.snackBar = snackBar;
         this.TIMEOUT_STEP = 400;
+        this.groupOffset = 0;
+        this.groupsAvailable = 0;
         this.currentUser = {};
         this.currentUserGroups = [];
         this.searchingIsRunning = false;
@@ -540,6 +542,8 @@ var FeedComponent = (function () {
         }
     };
     FeedComponent.prototype.submitWallForm = function (event, data) {
+        this.groupOffset = 0;
+        this.groupsAvailable = 0;
         this.posts = [];
         this.timer = 0;
         this.counter = 0;
@@ -572,6 +576,8 @@ var FeedComponent = (function () {
                         user_access_token: _this.authService.cookies.access_token,
                         count: 100 })
                         .then(function (groups_response) {
+                        _this.groupsAvailable = groups_response.available;
+                        console.log(_this.groupsAvailable);
                         var groupList = groups_response.groups.filter(function (group) {
                             if (!group.deactivated) {
                                 return group;
@@ -595,6 +601,21 @@ var FeedComponent = (function () {
         this.posts = [];
         this.currentUser = { uid: null };
         this.currentUserGroups = [];
+    };
+    FeedComponent.prototype.getMoreGroups = function () {
+        var _this = this;
+        this.groupOffset += 100;
+        this.appService
+            .getUserGroups({ user_id: this.currentUser.uid,
+            user_access_token: this.authService.cookies.access_token,
+            count: 100, offset: this.groupOffset })
+            .then(function (response) {
+            var groupList = response.groups.filter(function (group) {
+                if (!group.deactivated) {
+                    _this.currentUserGroups.push(group);
+                }
+            });
+        });
     };
     FeedComponent.prototype.ngOnInit = function () {
         this.authService.update();
