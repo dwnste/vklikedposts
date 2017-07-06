@@ -185,6 +185,31 @@ __WEBPACK_IMPORTED_MODULE_1_moment__["locale"]('ru');
 var AppService = (function () {
     function AppService() {
     }
+    AppService.prototype.getUserData = function (_a) {
+        var user_id = _a.user_id, user_access_token = _a.user_access_token;
+        var url = ("\n            https://api.vk.com/api.php?\n                oauth=1&\n                method=users.get&\n                user_ids=" + user_id + "&\n                name_case=Nom&\n                fields=photo_50,online&\n                access_token=" + user_access_token).replace(/ /g, '');
+        return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
+            .then(function (response) { return response.json(); })
+            .then(function (_a) {
+            var response = _a.response;
+            return response;
+        })
+            .catch(function (ex) { return console.log('parsing failed', ex); });
+    };
+    ;
+    AppService.prototype.getUserGroups = function (_a) {
+        var user_id = _a.user_id, user_access_token = _a.user_access_token, count = _a.count;
+        var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            extended=1&\n            method=groups.get&\n            user_id=" + user_id + "&\n            offset=0&\n            count=" + count + "&\n            access_token=" + user_access_token).replace(/ /g, '');
+        return __WEBPACK_IMPORTED_MODULE_0_fetch_jsonp__(url)
+            .then(function (response) { return response.json(); })
+            .then(function (_a) {
+            var response = _a.response;
+            var length = response[0], groups = response.slice(1);
+            return { length: length, groups: groups };
+        })
+            .catch(function (ex) { return console.log('parsing failed', ex); });
+    };
+    ;
     AppService.prototype.getWallPosts = function (_a) {
         var owner_id = _a.owner_id, user_access_token = _a.user_access_token, count = _a.count;
         var url = ("\n        https://api.vk.com/api.php?\n            oauth=1&\n            method=wall.get&\n            owner_id=" + owner_id + "&\n            offset=0&\n            count=" + count + "&\n            filter=all&\n            access_token=" + user_access_token).replace(/ /g, '');
@@ -192,8 +217,11 @@ var AppService = (function () {
             .then(function (response) { return response.json(); })
             .then(function (_a) {
             var response = _a.response;
-            var length = response[0], posts = response.slice(1);
-            return { length: length, posts: posts };
+            if (response) {
+                var length = response[0], posts = response.slice(1);
+                return { length: length, posts: posts };
+            }
+            return null;
         })
             .catch(function (ex) { return console.log('parsing failed', ex); });
     };
@@ -382,7 +410,7 @@ var _a, _b;
 /***/ "../../../../../src/app/feed/feed.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button>\n      <a *ngIf=\"this.authService.loggedIn()\" (click)=\"this.authService.logout()\">Log Out</a>\n      <a *ngIf=\"!this.authService.loggedIn()\" (click)=\"this.authService.login()\">Log In</a>\n    </button>\n  </md-toolbar>\n  <md-card *ngIf=\"!this.authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"this.authService.loggedIn()\">\n\n    <md-tab label=\"Посты\" *ngIf=\"posts.length\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Настройки\">\n      <md-card>\n        <form novalidate (submit)=\"submitForm($event, form.value)\" #form=\"ngForm\">\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"user_id\" placeholder=\"ID кого искать\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"group_id\" placeholder=\"ID где искать\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n          <!--\n          <md-radio-group name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"id\">ID</md-radio-button>\n            <md-radio-button value=\"domain\">Короткий адрес</md-radio-button>\n          </md-radio-group>\n          -->\n          <md-input-container class=\"md-block\">\n            <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <button md-raised-button color=\"primary\" [disabled]=\"!form.valid\" type=\"submit\">Найти</button>\n        </form>\n      </md-card>\n\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
+module.exports = "<!--The whole content below can be removed with the new code.-->\n<div>\n\n  <md-toolbar color=\"primary\">\n    <span>\n      <a [routerLink]=\"['/']\">VK Liked Posts</a>\n      <span *ngIf=\"((timer - counter * TIMEOUT_STEP) / 1000) > 0\"> | \n        <i class=\"material-icons md-18\"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}\n      </span>\n    </span>\n    <button md-icon-button>\n      <a *ngIf=\"this.authService.loggedIn()\" (click)=\"this.authService.logout()\">Log Out</a>\n      <a *ngIf=\"!this.authService.loggedIn()\" (click)=\"this.authService.login()\">Log In</a>\n    </button>\n  </md-toolbar>\n  <md-card *ngIf=\"!this.authService.loggedIn()\">\n    <span>\n      Для взаимодействия с данными VK.com требуется авторизация!\n    </span>\n  </md-card>\n  <md-tab-group [selectedIndex]=\"selectedTab\" *ngIf=\"this.authService.loggedIn()\">\n\n    <md-tab label=\"Посты\" *ngIf=\"posts.length\">\n      <md-card *ngFor=\"let post of posts\">\n      <md-card-header>\n        <md-card-title>{{post.date}}</md-card-title>\n        <md-card-subtitle *ngIf=\"post.reposted === 1\">\n          <i class=\"material-icons md-18\"> reply </i> репост\n        </md-card-subtitle>\n      </md-card-header>\n        <img *ngIf=\"post.attachment && post.attachment.type === 'link'\" md-card-image src=\"{{post.attachment.link.image_big}}\" alt=\"\">\n        <img *ngIf=\"post.attachment && post.attachment.type === 'photo'\" md-card-image src=\"{{post.attachment.photo.src_big}}\" alt=\"\">\n        <md-card-content>\n          <p>\n            {{ post.text }}\n          </p>\n        </md-card-content>\n        <md-card-actions>\n          <button (click)=\"showOriginal(post)\" md-button>\n            <i class=\"material-icons md-18\"> visibility </i> ОРИГИНАЛ\n          </button>\n        </md-card-actions>\n\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Пользователь\" *ngIf=\"!currentUser.uid || currentUser.deactivated\">\n      <md-card>\n        <form novalidate (submit)=\"submitUserForm($event, userForm.value)\" #userForm=\"ngForm\">\n          <md-input-container class=\"md-block\">\n            <input mdInput ngModel required name=\"user_id\" placeholder=\"ID кого искать\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <button md-raised-button color=\"primary\" [disabled]=\"!userForm.valid\" type=\"submit\">Найти</button>\n        </form>\n      </md-card>\n\n    </md-tab>\n\n    <md-tab label=\"Поиск лайков\" *ngIf=\"currentUser.uid && !currentUser.deactivated\">\n      <md-card>\n        <md-card-header>\n          <div md-card-avatar><img src=\"{{currentUser.photo_50}}\" alt=\"\"></div>\n          <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>\n          <md-card-subtitle *ngIf=\"currentUser.online === 1\">Online</md-card-subtitle>\n          <md-radio-group name=\"radio\" [(ngModel)]=\"radio\">\n            <md-radio-button value=\"user_groups\">Группы пользователя</md-radio-button>\n            <md-radio-button value=\"other_groups\">Другие группы</md-radio-button>\n          </md-radio-group>\n        </md-card-header>\n\n        <form novalidate (submit)=\"submitWallForm($event, wallForm)\" #wallForm=\"ngForm\">\n          <md-input-container *ngIf=\"radio === 'other_groups'\" class=\"md-block\">\n            <input mdInput ngModel required name=\"group_id\" placeholder=\"ID где искать\" type=\"number\">\n          </md-input-container>\n\n          <md-select *ngIf=\"radio === 'user_groups'\" ngModel name=\"group_id\" style=\"width: 100%\" placeholder=\"Группы пользователя\">\n            <md-option mdInput *ngFor=\"let group of currentUserGroups\" [value]=\"group.gid * -1\">\n              <img style=\"width: 30px; height: 30px; margin: auto auto\" src=\"{{group.photo}}\">\n              {{group.name}}\n            </md-option>\n          </md-select>\n\n          <md-input-container class=\"md-block\">\n            <input mdInput min=\"1\" ngModel required name=\"posts_count\" placeholder=\"Кол-во постов\" type=\"number\">\n          </md-input-container>\n          <div class=\"md-errors-spacer\"></div>\n\n          <button md-raised-button color=\"primary\" type=\"button\" (click)=\"backToUserForm($event)\">Вернуться</button>\n          <button md-raised-button color=\"primary\" [disabled]=\"!wallForm.valid\" type=\"submit\">Найти</button>\n        </form>\n      </md-card>\n    </md-tab>\n\n  </md-tab-group>\n</div>\n\n\n"
 
 /***/ }),
 
@@ -394,7 +422,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, "a {\n  text-decoration: none;\n  color: #fff; }\n\nform {\n  margin: 0 auto;\n  width: 90%; }\n\ni {\n  font-family: 'Material Icons';\n  -webkit-font-feature-settings: 'liga';\n          font-feature-settings: 'liga';\n  font-weight: normal;\n  font-style: normal;\n  font-size: inherit;\n  line-height: inherit;\n  vertical-align: top;\n  display: inline-block;\n  text-transform: none;\n  letter-spacing: normal;\n  word-wrap: normal;\n  white-space: nowrap;\n  direction: ltr;\n  -webkit-font-smoothing: antialiased;\n  text-rendering: optimizeLegibility;\n  -moz-osx-font-smoothing: grayscale; }\n\nmd-card {\n  width: 100%; }\n  md-card.mat-card {\n    padding: 24px 0; }\n\nmd-input-container {\n  width: 100%; }\n\n@media (min-width: 700px) {\n  md-card {\n    width: 600px;\n    margin: 5px auto; }\n    md-card.mat-card {\n      padding: 24px; }\n  form {\n    margin: 0 auto;\n    width: 200px; } }\n", ""]);
+exports.push([module.i, "a {\n  text-decoration: none;\n  color: #fff; }\n\nform {\n  margin: 0 auto;\n  width: 90%; }\n\ni {\n  font-family: 'Material Icons';\n  -webkit-font-feature-settings: 'liga';\n          font-feature-settings: 'liga';\n  font-weight: normal;\n  font-style: normal;\n  font-size: inherit;\n  line-height: inherit;\n  vertical-align: top;\n  display: inline-block;\n  text-transform: none;\n  letter-spacing: normal;\n  word-wrap: normal;\n  white-space: nowrap;\n  direction: ltr;\n  -webkit-font-smoothing: antialiased;\n  text-rendering: optimizeLegibility;\n  -moz-osx-font-smoothing: grayscale; }\n\nmd-card {\n  width: 100%; }\n  md-card.mat-card {\n    padding: 24px 0; }\n  md-card md-card-header.mat-card-header {\n    width: 90%;\n    margin: 0 auto; }\n  md-card div.mat-card-avatar img {\n    border-radius: 20px;\n    width: 100%;\n    height: 100%; }\n\nmd-input-container {\n  width: 100%; }\n\n@media (min-width: 700px) {\n  md-card {\n    width: 600px;\n    margin: 5px auto; }\n    md-card.mat-card {\n      padding: 24px; }\n    md-card div.mat-card-avatar img {\n      border-radius: 20px;\n      width: 100%;\n      height: 100%; }\n  form {\n    margin: 0 auto;\n    width: 200px; } }\n", ""]);
 
 // exports
 
@@ -409,8 +437,9 @@ module.exports = module.exports.toString();
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/@angular/core.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_service__ = __webpack_require__("../../../../../src/app/app.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__auth_auth_service__ = __webpack_require__("../../../../../src/app/auth/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_material__ = __webpack_require__("../../../material/@angular/material.es5.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_service__ = __webpack_require__("../../../../../src/app/app.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__auth_auth_service__ = __webpack_require__("../../../../../src/app/auth/auth.service.ts");
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FeedComponent; });
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
@@ -424,11 +453,16 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var FeedComponent = (function () {
-    function FeedComponent(appService, authService) {
+    function FeedComponent(appService, authService, snackBar) {
         this.appService = appService;
         this.authService = authService;
+        this.snackBar = snackBar;
         this.TIMEOUT_STEP = 400;
+        this.currentUser = {};
+        this.currentUserGroups = [];
+        this.radio = 'user_groups'; // 'other_groups'
         this.posts = [];
         this.timer = 0;
         this.counter = 0;
@@ -445,7 +479,7 @@ var FeedComponent = (function () {
             })
                 .catch(function (e) { console.log(e); })
                 .then(function (response) {
-                if ('posts' in response) {
+                if (response) {
                     var timeOut_1 = 0;
                     response.posts.map(function (post) {
                         timeOut_1 += _this.TIMEOUT_STEP;
@@ -474,7 +508,7 @@ var FeedComponent = (function () {
                     _this.timer = timeOut_1;
                 }
                 else {
-                    console.log(response.error, response.error_description.replace('+', ' '));
+                    _this.showError();
                 }
             });
         }
@@ -485,18 +519,60 @@ var FeedComponent = (function () {
             document.location.href = "https://vk.com/wall" + post.to_id + "_" + post.id;
         }
     };
-    FeedComponent.prototype.submitForm = function (event, data) {
+    FeedComponent.prototype.showError = function (error, error_description) {
+        this.snackBar.open('Что-то пошло не так', 'ОК');
+        console.log('No response, sorry');
+    };
+    FeedComponent.prototype.submitUserForm = function (event, data) {
+        event.preventDefault();
+        this.getUserAndUserGroups({ user_id: data.user_id, user_access_token: this.authService.cookies.access_token });
+    };
+    FeedComponent.prototype.submitWallForm = function (event, data) {
         this.posts = [];
         event.preventDefault();
         this.selectedTab = 0;
         this.getAndFilterPosts({
-            owner_id: data.group_id,
-            user_id: data.user_id,
-            count: data.posts_count,
+            owner_id: data.form.value.group_id,
+            user_id: this.currentUser.uid,
+            count: data.form.value.posts_count,
             user_access_token: this.authService.cookies.access_token
         });
     };
-    FeedComponent.prototype.ngOnInit = function () { };
+    FeedComponent.prototype.getUserAndUserGroups = function (_a) {
+        var _this = this;
+        var user_id = _a.user_id, user_access_token = _a.user_access_token;
+        this.appService
+            .getUserData({ user_id: user_id, user_access_token: user_access_token })
+            .then(function (response) {
+            if (!response) {
+                _this.showError();
+            }
+            else {
+                _this.currentUser = response[0];
+                if ('deactivated' in _this.currentUser) {
+                    _this.snackBar.open("\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0438\u043C\u0435\u0435\u0442 \u0441\u0442\u0430\u0442\u0443\u0441: " + _this.currentUser.deactivated, 'OK');
+                }
+                else {
+                    _this.appService
+                        .getUserGroups({ user_id: _this.currentUser.uid,
+                        user_access_token: _this.authService.cookies.access_token,
+                        count: 100 })
+                        .then(function (groups_response) {
+                        _this.currentUserGroups = groups_response.groups;
+                    });
+                }
+            }
+        });
+    };
+    FeedComponent.prototype.backToUserForm = function (event) {
+        event.preventDefault();
+        this.posts = [];
+        this.currentUser = null;
+        this.currentUserGroups = null;
+    };
+    FeedComponent.prototype.ngOnInit = function () {
+        this.authService.update();
+    };
     return FeedComponent;
 }());
 FeedComponent = __decorate([
@@ -505,10 +581,10 @@ FeedComponent = __decorate([
         template: __webpack_require__("../../../../../src/app/feed/feed.component.html"),
         styles: [__webpack_require__("../../../../../src/app/feed/feed.component.scss")]
     }),
-    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_1__app_service__["a" /* AppService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__app_service__["a" /* AppService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_2__auth_auth_service__["a" /* AuthService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__auth_auth_service__["a" /* AuthService */]) === "function" && _b || Object])
+    __metadata("design:paramtypes", [typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_2__app_service__["a" /* AppService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__app_service__["a" /* AppService */]) === "function" && _a || Object, typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_3__auth_auth_service__["a" /* AuthService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__auth_auth_service__["a" /* AuthService */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_1__angular_material__["b" /* MdSnackBar */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1__angular_material__["b" /* MdSnackBar */]) === "function" && _c || Object])
 ], FeedComponent);
 
-var _a, _b;
+var _a, _b, _c;
 //# sourceMappingURL=feed.component.js.map
 
 /***/ }),
