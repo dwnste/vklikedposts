@@ -14,6 +14,7 @@ export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
   currentUser = <any>{};
   currentUserGroups = [];
+  searchingIsRunning = false;
   radio = 'user_groups' // 'other_groups'
   posts = [];
   timer = 0;
@@ -25,6 +26,7 @@ export class FeedComponent implements OnInit {
 
   getAndFilterPosts({owner_id, user_id, count, user_access_token}) {
     if (this.authService.loggedIn()) {
+      this.searchingIsRunning = true;
       this.appService.getWallPosts({
         owner_id: owner_id,
         count: count,
@@ -55,6 +57,10 @@ export class FeedComponent implements OnInit {
                       } else {
                         console.log('problems with getting response, skipped')
                       }
+
+                      if (this.counter === response.posts.length) {
+                        this.searchingIsRunning = false;
+                      }
                     });
                 }, timeOut);
               });
@@ -64,7 +70,6 @@ export class FeedComponent implements OnInit {
             }
           });
       }
-    this.counter = 0;
   }
 
   showOriginal(post) {
@@ -89,6 +94,8 @@ export class FeedComponent implements OnInit {
 
   submitWallForm(event: Event, data: any) {
     this.posts = [];
+    this.timer = 0;
+    this.counter = 0;
     event.preventDefault();
     this.selectedTab = 0;
     this.getAndFilterPosts({

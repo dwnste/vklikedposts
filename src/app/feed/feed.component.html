@@ -86,8 +86,8 @@
           </md-input-container>
           <div class="md-errors-spacer"></div>
 
-          <button md-raised-button color="primary" type="button" (click)="backToUserForm($event)">Вернуться</button>
-          <button md-raised-button color="primary" [disabled]="!wallForm.valid" type="submit">Найти</button>
+          <button md-raised-button color="primary" type="button" [disabled]="searchingIsRunning" (click)="backToUserForm($event)">Вернуться</button>
+          <button md-raised-button color="primary" [disabled]="!wallForm.valid || searchingIsRunning" type="submit">Найти</button>
         </form>
       </md-card>
     </md-tab>
