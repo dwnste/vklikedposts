@@ -80,7 +80,11 @@ export class FeedComponent implements OnInit {
 
   submitUserForm(event: Event, data: any) {
     event.preventDefault();
-    this.getUserAndUserGroups({user_id: data.user_id, user_access_token: this.authService.cookies.access_token});
+    if (data.user_id >= 0) {
+      this.getUserAndUserGroups({user_id: data.user_id, user_access_token: this.authService.cookies.access_token});
+    } else {
+      this.snackBar.open('Неправильный ID пользователя', 'ОК');
+    }
   }
 
   submitWallForm(event: Event, data: any) {
@@ -120,7 +124,7 @@ export class FeedComponent implements OnInit {
   backToUserForm(event: Event) {
     event.preventDefault();
     this.posts = [];
-    this.currentUser = null;
+    this.currentUser = {uid: null};
     this.currentUserGroups = null;
   }
 

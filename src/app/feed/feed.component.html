@@ -8,17 +8,15 @@
         <i class="material-icons md-18"> access_time </i> {{ (timer - counter * TIMEOUT_STEP) / 1000 }}
       </span>
     </span>
-    <button md-icon-button>
-      <a *ngIf="this.authService.loggedIn()" (click)="this.authService.logout()">Log Out</a>
-      <a *ngIf="!this.authService.loggedIn()" (click)="this.authService.login()">Log In</a>
-    </button>
+    <button md-icon-button *ngIf="authService.loggedIn()" (click)="authService.logout()">Log Out</button>
+    <button md-icon-button *ngIf="!authService.loggedIn()" (click)="authService.login()">Log In</button>
   </md-toolbar>
-  <md-card *ngIf="!this.authService.loggedIn()">
+  <md-card *ngIf="!authService.loggedIn()">
     <span>
       Для взаимодействия с данными VK.com требуется авторизация!
     </span>
   </md-card>
-  <md-tab-group [selectedIndex]="selectedTab" *ngIf="this.authService.loggedIn()">
+  <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
 
     <md-tab label="Посты" *ngIf="posts.length">
       <md-card *ngFor="let post of posts">
@@ -49,7 +47,7 @@
       <md-card>
         <form novalidate (submit)="submitUserForm($event, userForm.value)" #userForm="ngForm">
           <md-input-container class="md-block">
-            <input mdInput ngModel required name="user_id" placeholder="ID кого искать" type="number">
+            <input mdInput ngModel required min="0" name="user_id" placeholder="ID кого искать" type="number">
           </md-input-container>
           <div class="md-errors-spacer"></div>
 

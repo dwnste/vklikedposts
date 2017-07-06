@@ -25,6 +25,7 @@ export class AuthService {
   }
 
   setCookie({rName, rValue, rExpires}) {
+    console.log('hello')
     this.cookies = Cookie.set(rName, rValue, rExpires);
     this.update();
   }
