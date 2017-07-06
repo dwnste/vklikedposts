@@ -65,7 +65,7 @@
           <div md-card-avatar><img src="{{currentUser.photo_50}}" alt=""></div>
           <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>
           <md-card-subtitle *ngIf="currentUser.online === 1">Online</md-card-subtitle>
-          <md-radio-group name="radio" [(ngModel)]="radio">
+          <md-radio-group *ngIf="currentUserGroups.length" name="radio" [(ngModel)]="radio">
             <md-radio-button value="user_groups">Группы пользователя</md-radio-button>
             <md-radio-button value="other_groups">Другие группы</md-radio-button>
           </md-radio-group>
@@ -76,9 +76,9 @@
               <input mdInput ngModel required name="group_id" placeholder="ID где искать" type="number">
             </md-input-container>
 
-            <md-select *ngIf="radio === 'user_groups'" ngModel name="group_id" style="width: 100%" placeholder="Группы пользователя">
+            <md-select *ngIf="radio === 'user_groups'" required ngModel name="group_id" placeholder="Группы пользователя">
               <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid * -1">
-                <img style="width: 30px; height: 30px; margin: auto auto" src="{{group.photo}}">
+                <img src="{{group.photo}}">
                 {{group.name}}
               </md-option>
             </md-select>

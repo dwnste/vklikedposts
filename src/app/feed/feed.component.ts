@@ -125,7 +125,17 @@ export class FeedComponent implements OnInit {
                                 user_access_token: this.authService.cookies.access_token,
                                 count: 100})
                   .then((groups_response: any) => {
-                    this.currentUserGroups = groups_response.groups;
+                    const groupList = groups_response.groups.filter((group) => {
+                      if (!group.deactivated) {
+                        return group;
+                      }
+                    });
+                    if (groupList.length) {
+                      this.currentUserGroups = groupList;
+                    } else {
+                      this.radio = 'other_groups';
+                      this.currentUserGroups = [];
+                    }
                   })
             }
           }
@@ -134,9 +144,10 @@ export class FeedComponent implements OnInit {
 
   backToUserForm(event: Event) {
     event.preventDefault();
+    this.radio = 'user_groups';
     this.posts = [];
     this.currentUser = {uid: null};
-    this.currentUserGroups = null;
+    this.currentUserGroups = [];
   }
 
   ngOnInit() {

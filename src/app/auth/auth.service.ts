@@ -25,7 +25,6 @@ export class AuthService {
   }
 
   setCookie({rName, rValue, rExpires}) {
-    console.log('hello')
     this.cookies = Cookie.set(rName, rValue, rExpires);
     this.update();
   }
@@ -52,8 +51,9 @@ export class AuthService {
           rName: 'access_token',
           rValue: qs.parse(fragment).access_token,
           rExpires: (qs.parse(fragment).expires_in / 60 / 60 / 24)});
+
+          this.update();
       }
-      this.update();
       this.router.navigate(['/']);
     });
   }
