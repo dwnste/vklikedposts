@@ -12,6 +12,9 @@ import { AuthService } from '../auth/auth.service';
 })
 export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
+  postsAll = [];
+  postsOffset = 0;
+  postsAvailable = 0;
   groupOffset = 0;
   groupsAvailable = 0;
   currentUser = <any>{};
@@ -26,54 +29,80 @@ export class FeedComponent implements OnInit {
               public authService: AuthService,
               public snackBar: MdSnackBar) {}
 
+  getWallPosts({owner_id, count, user_access_token, posts = []}) {
+    return this.appService.getWallPosts({
+            owner_id: owner_id,
+            count: count,
+            user_access_token: user_access_token })
+              .catch((e) => { console.log(e) })
+              .then((response: any) => {
+                if (response) {
+                  if (count > response.available) {
+                    count = response.available;
+                  }
+                  if (count > 100) {
+                     this.postsOffset += 100;
+                     count -= 100;
+                  } else {
+                     this.postsOffset += count;
+                  }
+                  this.postsAvailable = response.available;
+                  posts = posts.concat(response.posts);
+                  if (this.postsOffset <= count && this.postsOffset <= this.postsAvailable) {
+                    return this.getWallPosts({owner_id, count, user_access_token, posts});
+                  } else {
+                    return posts;
+                  }
+                } else {
+                  this.showError();
+                }
+              })
+  }
+
   getAndFilterPosts({owner_id, user_id, count, user_access_token}) {
     if (this.authService.loggedIn()) {
       this.searchingIsRunning = true;
-      this.appService.getWallPosts({
+      this.getWallPosts({
         owner_id: owner_id,
         count: count,
         user_access_token: user_access_token })
           .catch((e) => { console.log(e) })
-          .then((response: any) => {
-            if (response) {
-              let timeOut = 0;
-              response.posts.map((post) => {
-                timeOut += this.TIMEOUT_STEP;
-                setTimeout(() => {
-                  this.appService
-                    .isLiked({
-                      user_id: user_id,
-                      type: 'post',
-                      owner_id: owner_id,
-                      item_id: post.id,
-                      user_access_token: user_access_token
-                    })
-                    .then((isliked_response: any) => {
+          .then((posts) => {
+            let timeOut = 0;
+            posts.map((post) => {
+              timeOut += this.TIMEOUT_STEP;
+              setTimeout(() => {
+                this.appService
+                  .isLiked({
+                    user_id: user_id,
+                    type: 'post',
+                    owner_id: owner_id,
+                    item_id: post.id,
+                    user_access_token: user_access_token
+                  })
+                  .then((isliked_response: any) => {
 
-                      this.counter += 1;
+                    this.counter += 1;
 
-                      if (isliked_response && 'liked' in isliked_response) {
-                        if (Boolean(isliked_response.liked)) {
-                          this.posts.push(this.appService.formatPost(post, isliked_response));
-                        }
-                      } else {
-                        console.log('problems with getting response, skipped')
+                    if (isliked_response && 'liked' in isliked_response) {
+                      if (Boolean(isliked_response.liked)) {
+                        this.posts.push(this.appService.formatPost(post, isliked_response));
                       }
+                    } else {
+                      console.log('problems with getting response, skipped')
+                    }
 
-                      if (this.counter === response.posts.length) {
-                        this.searchingIsRunning = false;
+                    if (this.counter === posts.length) {
+                      this.searchingIsRunning = false;
 
-                        if (!this.posts.length) {
-                          this.snackBar.open('Ни одного поста с лайком', 'ОК');
-                        }
+                      if (!this.posts.length) {
+                        this.snackBar.open('Ни одного поста с лайком', 'ОК');
                       }
-                    });
-                }, timeOut);
-              });
-              this.timer = timeOut;
-            } else {
-              this.showError();
-            }
+                    }
+                  });
+              }, timeOut);
+            });
+            this.timer = timeOut;
           });
       }
   }

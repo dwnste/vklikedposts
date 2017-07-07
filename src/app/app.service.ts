@@ -61,8 +61,8 @@ export class AppService {
                 .then( response => response.json())
                 .then( ({ response }) => {
                             if (response) {
-                                const [length, ...posts] = response;
-                                return {length, posts};
+                                const [available, ...posts] = response;
+                                return {available, posts};
                             }
                             return null;
                         })
