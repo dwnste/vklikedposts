@@ -5,6 +5,8 @@ import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { AppService } from '../app.service';
 import { AuthService } from '../auth/auth.service';
 
+import { async } from 'async';
+
 @Component({
   selector: 'app-feed',
   templateUrl: './feed.component.html',
@@ -12,8 +14,6 @@ import { AuthService } from '../auth/auth.service';
 })
 export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
-  postsAll = [];
-  postsOffset = 0;
   postsAvailable = 0;
   groupOffset = 0;
   groupsAvailable = 0;
@@ -29,27 +29,31 @@ export class FeedComponent implements OnInit {
               public authService: AuthService,
               public snackBar: MdSnackBar) {}
 
-  getWallPosts({owner_id, count, user_access_token, posts = []}) {
+  getWallPosts({owner_id, count, user_access_token, posts = [], offset = 0, pause = 0}) {
     return this.appService.getWallPosts({
             owner_id: owner_id,
             count: count,
-            user_access_token: user_access_token })
-              .catch((e) => { console.log(e) })
+            user_access_token: user_access_token,
+            offset: offset })
               .then((response: any) => {
+                console.log(response.posts)
                 if (response) {
-                  if (count > response.available) {
+                  if (count >= response.available) {
                     count = response.available;
                   }
                   if (count > 100) {
-                     this.postsOffset += 100;
-                     count -= 100;
+                    offset += 100;
+                    count -= 100;
                   } else {
-                     this.postsOffset += count;
+                    offset += count;
+                    count -= count;
                   }
                   this.postsAvailable = response.available;
                   posts = posts.concat(response.posts);
-                  if (this.postsOffset <= count && this.postsOffset <= this.postsAvailable) {
-                    return this.getWallPosts({owner_id, count, user_access_token, posts});
+                  console.log(offset, count, this.postsAvailable)
+                  if (count > 0 && this.postsAvailable >= offset) {
+                    pause += 400;
+                    return this.getWallPosts({owner_id, count, user_access_token, posts, offset, pause});
                   } else {
                     return posts;
                   }
@@ -57,6 +61,7 @@ export class FeedComponent implements OnInit {
                   this.showError();
                 }
               })
+              .catch((e) => { console.log(e) });
   }
 
   getAndFilterPosts({owner_id, user_id, count, user_access_token}) {
@@ -68,41 +73,45 @@ export class FeedComponent implements OnInit {
         user_access_token: user_access_token })
           .catch((e) => { console.log(e) })
           .then((posts) => {
-            let timeOut = 0;
-            posts.map((post) => {
-              timeOut += this.TIMEOUT_STEP;
-              setTimeout(() => {
-                this.appService
-                  .isLiked({
-                    user_id: user_id,
-                    type: 'post',
-                    owner_id: owner_id,
-                    item_id: post.id,
-                    user_access_token: user_access_token
-                  })
-                  .then((isliked_response: any) => {
+            if (posts) {
+              let timeOut = 0;
+              posts.map((post) => {
+                timeOut += this.TIMEOUT_STEP;
+                setTimeout(() => {
+                  this.appService
+                    .isLiked({
+                      user_id: user_id,
+                      type: 'post',
+                      owner_id: owner_id,
+                      item_id: post.id,
+                      user_access_token: user_access_token
+                    })
+                    .then((isliked_response: any) => {
 
-                    this.counter += 1;
+                      this.counter += 1;
 
-                    if (isliked_response && 'liked' in isliked_response) {
-                      if (Boolean(isliked_response.liked)) {
-                        this.posts.push(this.appService.formatPost(post, isliked_response));
+                      if (isliked_response && 'liked' in isliked_response) {
+                        if (Boolean(isliked_response.liked)) {
+                          this.posts.push(this.appService.formatPost(post, isliked_response));
+                        }
+                      } else {
+                        console.log('problems with getting response, skipped')
                       }
-                    } else {
-                      console.log('problems with getting response, skipped')
-                    }
 
-                    if (this.counter === posts.length) {
-                      this.searchingIsRunning = false;
+                      if (this.counter === posts.length) {
+                        this.searchingIsRunning = false;
 
-                      if (!this.posts.length) {
-                        this.snackBar.open('Ни одного поста с лайком', 'ОК');
+                        if (!this.posts.length) {
+                          this.snackBar.open('Ни одного поста с лайком', 'ОК');
+                        }
                       }
-                    }
-                  });
-              }, timeOut);
-            });
+                    });
+                }, timeOut);
+              });
             this.timer = timeOut;
+            } else {
+              this.snackBar.open('Не получилось запросить посты', 'ОК')
+            }
           });
       }
   }
@@ -116,6 +125,12 @@ export class FeedComponent implements OnInit {
   showError(error?, error_description?) {
     this.snackBar.open('Что-то пошло не так', 'ОК');
     console.log('No response, sorry');
+  }
+
+  showTimer = (timer, counter, TIMEOUT_STEP) => {
+    const timeBase = (timer - counter * TIMEOUT_STEP) / 1000;
+    return timeBase + 'СЕК';
+
   }
 
   submitUserForm(event: Event, data: any) {

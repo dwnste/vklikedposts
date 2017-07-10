@@ -33,6 +33,7 @@
     "@types/hammerjs": "^2.0.34",
     "@types/jasmine": "2.5.45",
     "@types/node": "~6.0.60",
+    "async": "^2.5.0",
     "codelyzer": "~3.0.1",
     "fetch-jsonp": "^1.1.1",
     "hammerjs": "^2.0.8",
