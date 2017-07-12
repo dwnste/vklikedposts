@@ -233,5 +233,6 @@ export class FeedComponent implements OnInit {
 
   ngOnInit() {
     this.authService.update();
+    this.appService.execute({user_access_token: this.authService.cookies.access_token})
   }
 }

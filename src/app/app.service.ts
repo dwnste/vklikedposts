@@ -4,6 +4,16 @@ import * as moment from 'moment';
 moment.locale('ru');
 
 export class AppService {
+    execute({user_access_token, ...params}) {
+        const a = 'return API.users.get({"user_ids": API.photos.search({"q":"Beatles", "count":3}).items@.owner_id})@.last_name;'
+        const url = `https://api.vk.com/method/execute?code=${a}&access_token=${user_access_token}`
+        return fetchJsonp(url)
+                    .then( response => response.json())
+                    .then( ({ response }) => {
+                        console.log(response);
+                    })
+    }
+
     getUserData({user_id, user_access_token}) {
         const url = `
             https://api.vk.com/api.php?
