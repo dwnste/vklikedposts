@@ -32,10 +32,16 @@ export class FeedComponent implements OnInit {
   getAllWallPosts({owner_id, user_id, user_access_token, count}) {
     let offsetsCount = 0;
     let postsAvailable = 0;
+
     const httpRequest = (offset, callback) => {
+      if (count - offset < 100) {
+        count = count - offset;
+      }
+
+      this.searchingIsRunning = true;
         return this.appService.getWallPosts({
                 owner_id: owner_id,
-                count: 100,
+                count: count,
                 user_access_token: user_access_token,
                 offset: offset })
                     .then((response: any) => {
@@ -45,12 +51,11 @@ export class FeedComponent implements OnInit {
         }
 
     const apiQuery = function (count, apiQueryCallback)  {
-    const maxPerRequest = 100
-    offsetsCount = Math.ceil(count / maxPerRequest);
-    let 
-        maxRPS = 3,
-        offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i*maxPerRequest}),
-        results = [];
+      let maxPerRequest = 100,
+          maxRPS = 3,
+          offsetsCount = Math.ceil(count / maxPerRequest),
+          offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i*maxPerRequest}),
+          results = [];
 
     const queue = async.queue(function (offset, callback) {
         console.log(+(new Date().getSeconds()) + ' performing offset#' + offset + ' request');
@@ -62,7 +67,6 @@ export class FeedComponent implements OnInit {
 
       async.eachLimit(offsets, maxRPS, 
         function (offset, callback) {
-          // console.log(+(new Date()) + ' pushing ' + offset);
           queue.push(offset);
           setTimeout(callback, 1000);
           },
@@ -79,11 +83,12 @@ export class FeedComponent implements OnInit {
     };
     apiQuery(count, (results: any) => {
       console.log(results)
-      this.getAndFilterPosts({owner_id, user_id, count, user_access_token, posts: results})
+      this.searchingIsRunning = false;
+      this.getAndFilterPosts({owner_id, user_id, user_access_token, posts: results})
     });
   }
   
-  getAndFilterPosts({owner_id, user_id, count, user_access_token, posts}) {
+  getAndFilterPosts({owner_id, user_id, user_access_token, posts}) {
     if (this.authService.loggedIn()) {
       this.searchingIsRunning = true;
         if (posts) {
