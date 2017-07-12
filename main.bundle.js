@@ -492,9 +492,13 @@ var FeedComponent = (function () {
         var offsetsCount = 0;
         var postsAvailable = 0;
         var httpRequest = function (offset, callback) {
+            if (count - offset < 100) {
+                count = count - offset;
+            }
+            _this.searchingIsRunning = true;
             return _this.appService.getWallPosts({
                 owner_id: owner_id,
-                count: 100,
+                count: count,
                 user_access_token: user_access_token,
                 offset: offset
             })
@@ -504,9 +508,7 @@ var FeedComponent = (function () {
             });
         };
         var apiQuery = function (count, apiQueryCallback) {
-            var maxPerRequest = 100;
-            offsetsCount = Math.ceil(count / maxPerRequest);
-            var maxRPS = 3, offsets = Array.apply(null, Array(offsetsCount)).map(function (_, i) { return i * maxPerRequest; }), results = [];
+            var maxPerRequest = 100, maxRPS = 3, offsetsCount = Math.ceil(count / maxPerRequest), offsets = Array.apply(null, Array(offsetsCount)).map(function (_, i) { return i * maxPerRequest; }), results = [];
             var queue = __WEBPACK_IMPORTED_MODULE_4_async__["queue"](function (offset, callback) {
                 console.log(+(new Date().getSeconds()) + ' performing offset#' + offset + ' request');
                 return httpRequest(offset, function (result) {
@@ -515,7 +517,6 @@ var FeedComponent = (function () {
                 });
             }, maxRPS);
             __WEBPACK_IMPORTED_MODULE_4_async__["eachLimit"](offsets, maxRPS, function (offset, callback) {
-                // console.log(+(new Date()) + ' pushing ' + offset);
                 queue.push(offset);
                 setTimeout(callback, 1000);
             }, function () {
@@ -531,12 +532,13 @@ var FeedComponent = (function () {
         };
         apiQuery(count, function (results) {
             console.log(results);
-            _this.getAndFilterPosts({ owner_id: owner_id, user_id: user_id, count: count, user_access_token: user_access_token, posts: results });
+            _this.searchingIsRunning = false;
+            _this.getAndFilterPosts({ owner_id: owner_id, user_id: user_id, user_access_token: user_access_token, posts: results });
         });
     };
     FeedComponent.prototype.getAndFilterPosts = function (_a) {
         var _this = this;
-        var owner_id = _a.owner_id, user_id = _a.user_id, count = _a.count, user_access_token = _a.user_access_token, posts = _a.posts;
+        var owner_id = _a.owner_id, user_id = _a.user_id, user_access_token = _a.user_access_token, posts = _a.posts;
         if (this.authService.loggedIn()) {
             this.searchingIsRunning = true;
             if (posts) {
