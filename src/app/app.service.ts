@@ -3,8 +3,6 @@ import * as moment from 'moment';
 
 moment.locale('ru');
 
-import { async } from 'async';
-
 export class AppService {
     getUserData({user_id, user_access_token}) {
         const url = `
@@ -70,55 +68,6 @@ export class AppService {
                         })
                 .catch( ex => console.log('parsing failed', ex) );
     };
-
-    getAllWallPosts({owner_id, user_access_token, count, offset}) {
-        const httpRequest = function(count, callback) {
-            return this.appService.getWallPosts({
-                    owner_id: owner_id,
-                    count: count,
-                    user_access_token: user_access_token,
-                    offset: offset })
-                        .then((response: any) => callback(response.posts))
-            }
-
-        const apiQuery = function (count, apiQueryCallback)  {
-        const maxPerRequest = 100,
-            maxRPS = 3,
-            offsetsCount = Math.ceil(count / maxPerRequest),
-            offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i*maxPerRequest}),
-            results = [];
-
-        const queue = async.queue(function (offset, callback) {
-            console.log(+(new Date().getSeconds()) + ' performing offset#' + offset + ' request');
-            return httpRequest(offset, function(result) {
-            results.push(result);
-            callback();
-            });
-        }, maxRPS);
-
-        async.eachLimit(offsets, maxRPS, 
-            function (offset, callback) {
-            // console.log(+(new Date()) + ' pushing ' + offset);
-            queue.push(offset);
-            setTimeout(callback, 1000);
-            },
-            function() {
-            if (queue.length() === 0) {
-                apiQueryCallback(results);
-            } else {
-                queue.drain = function() {
-                return apiQueryCallback(results);
-                }
-            }
-            }
-        );
-        };
-
-        return apiQuery(1000, function(results) {
-            console.log('all items are proccesed');
-            return results;
-        });
-    }
 
     isLiked({user_id, type = 'post', owner_id, item_id, user_access_token}) {
         const url = `
