@@ -49,9 +49,12 @@ export class AppService {
         return fetchJsonp(url)
                 .then( response => response.json())
                 .then( ({ response }) => {
-                            const [available, ...groups] = response;
-                            return {available, groups};
-                        })
+                    if (response) {
+                      const [available, ...groups] = response;
+                      return {available, groups};
+                    }
+                    return null;
+                  })
                 .catch( ex => console.log('parsing failed', ex) );
     };
 
@@ -109,26 +112,25 @@ export class AppService {
     }
 
     apiQuery(count, apiQueryCallback, httpRequest) {
-        let
+        const
           maxPerRequest = 100,
           maxRPS = 3,
           offsetsCount = Math.ceil(count / maxPerRequest),
-          offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i*maxPerRequest}),
-          results = [];
+          offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i * maxPerRequest});
+
+        let results = [];
 
         const queue = async.queue(function (offset, callback) {
-          console.log(+(new Date().getSeconds()) + ' performing offset#' + offset + ' request');
           return httpRequest(offset)
                   .then((result) => {
-                    console.log('httprequest_result in service:', result.length)
                     results = results.concat(result);
                     return callback();
                   });
         }, maxRPS);
-        
-        async.eachLimit(offsets, maxRPS, 
+
+        async.eachLimit(offsets, maxRPS,
             function (offset, callback) {
-              console.log('eachLimit_offset:', offset);
+
               queue.push(offset, (err) => {
                 if (err) {
                   console.log(err);

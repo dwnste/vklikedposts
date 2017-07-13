@@ -35,6 +35,23 @@ export class FeedComponent implements OnInit {
               public authService: AuthService,
               public snackBar: MdSnackBar) {}
 
+  setDefault(event?: Event, removeUserData?: boolean) {
+    if (event) {
+      event.preventDefault();
+    }
+    if (removeUserData) {
+      this.currentUser = <any>{};
+      this.currentUserGroups = [];
+    }
+    this.state.skippedPosts = []
+    this.radio = 'user_groups';
+    this.state.likedPosts = [];
+    this.groupOffset = 0;
+    this.groupsAvailable = 0;
+    this.timer = 0;
+    this.counter = 0;
+    this.selectedTab = 0;
+  }
   getAllWallPosts({owner_id, user_id, user_access_token, count}) {
     this.state.isGettingPosts = true;
 
@@ -45,22 +62,18 @@ export class FeedComponent implements OnInit {
               user_access_token: user_access_token,
               offset: offset })
                   .then((response: any) => {
-                    console.log(count, offset, count-offset)
-                    console.log(response.posts)
                     return response.posts;
                   })
       }
-  
+
     return new Promise((resolve, reject) => {
-      console.log('prepromise')
       this.appService.apiQuery(count, (results: any) => {
-        console.log('in promise')
         this.state.isGettingPosts = false;
         resolve(results);
       }, httpRequest);
-    }) 
+    });
   }
-  
+
   filterLikedPosts({owner_id, user_id, user_access_token, posts}) {
     this.state.isCheckingLikes = true;
       if (posts) {
@@ -76,13 +89,12 @@ export class FeedComponent implements OnInit {
                 item_id: post.id,
                 user_access_token: user_access_token
               })
-              .then((isliked_response: any) => {
+              .then((response: any) => {
 
                 this.counter += 1;
-
-                if (isliked_response && 'liked' in isliked_response) {
-                  if (Boolean(isliked_response.liked)) {
-                    this.state.likedPosts.push(this.appService.formatPost(post, isliked_response));
+                if (response && 'liked' in response) {
+                  if (Boolean(response.liked)) {
+                    this.state.likedPosts.push(this.appService.formatPost(post, response));
                   }
                 } else {
                   this.state.skippedPosts.push(post);
@@ -139,18 +151,12 @@ export class FeedComponent implements OnInit {
   }
 
   submitWallForm(event: Event, data: any) {
-    this.groupOffset = 0;
-    this.groupsAvailable = 0;
-    this.state.likedPosts = [];
-    this.timer = 0;
-    this.counter = 0;
-    event.preventDefault();
-    this.selectedTab = 0;
+    this.setDefault(event);
     this.getLikedPosts({
       owner_id: data.form.value.group_id,
       user_id: this.currentUser.uid,
       count: data.form.value.posts_count,
-      user_access_token: this.authService.cookies.access_token})
+      user_access_token: this.authService.cookies.access_token});
   }
 
   getUserAndUserGroups({user_id, user_access_token}) {
@@ -169,14 +175,20 @@ export class FeedComponent implements OnInit {
                                 user_access_token: this.authService.cookies.access_token,
                                 count: 100})
                   .then((groups_response: any) => {
-                    this.groupsAvailable = groups_response.available;
-                    const groupList = groups_response.groups.filter((group) => {
-                      if (!group.deactivated) {
-                        return group;
+                    let groupList = [];
+                    if (Boolean(groups_response)) {
+                      this.groupsAvailable = groups_response.available;
+                      groupList = groups_response.groups.filter((group) => {
+                        if (!group.deactivated) {
+                          return group;
+                        }
+                      });
+                      if (groupList.length) {
+                        this.currentUserGroups = groupList;
+                      } else {
+                        this.radio = 'other_groups';
+                        this.currentUserGroups = [];
                       }
-                    });
-                    if (groupList.length) {
-                      this.currentUserGroups = groupList;
                     } else {
                       this.radio = 'other_groups';
                       this.currentUserGroups = [];
@@ -188,11 +200,7 @@ export class FeedComponent implements OnInit {
   }
 
   backToUserForm(event: Event) {
-    event.preventDefault();
-    this.radio = 'user_groups';
-    this.state.likedPosts = [];
-    this.currentUser = {uid: null};
-    this.currentUserGroups = [];
+    this.setDefault(event, true);
   }
 
   getMoreGroups() {
@@ -202,11 +210,13 @@ export class FeedComponent implements OnInit {
                       user_access_token: this.authService.cookies.access_token,
                       count: 100, offset: this.groupOffset})
       .then((response: any) => {
-                    const groupList = response.groups.filter((group) => {
-                      if (!group.deactivated) {
-                        this.currentUserGroups.push(group);
-                      }
-                    });
+        if (response) {
+          const groupList = response.groups.filter((group) => {
+            if (!group.deactivated) {
+              this.currentUserGroups.push(group);
+            }
+          });
+        }
       })
   }
 
