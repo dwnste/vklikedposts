@@ -1,4 +1,8 @@
-# Vklikedposts
+# VK Liked Posts
+
+<p>
+Input the ID of the user whose likes you want to find. Then specify the ID of a community or a user whose wall you want to parse. Press 'Найти'. As simple as that.
+</p>
 
 ## Working example
 
@@ -11,7 +15,7 @@
 <li><code>$ npm i</code></li>
 <li><code>$ ng serve -o</code></li>
 <li>...</li>
-<li>``PROFIT``</li>
+<li>__PROFIT__</li>
 </ol>
 
 ## Development server
