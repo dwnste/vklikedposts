@@ -1,11 +1,16 @@
 <!--The whole content below can be removed with the new code.-->
 <div>
-
+  <div class="progress-bar-container">
+    <md-progress-bar *ngIf="state.isGettingPosts" mode="indeterminate" color="secondary"></md-progress-bar>
+  </div>
   <md-toolbar color="primary">
     <span>
       <a [routerLink]="['/']">VK Liked Posts</a>
       <span *ngIf="((timer - counter * TIMEOUT_STEP) / 1000) > 0"> | 
         <i class="material-icons md-18"> access_time </i> {{ showTimer(timer, counter, TIMEOUT_STEP) }}
+      </span>
+      <span *ngIf="state.skippedPosts.length"> |
+        <i class="material-icons md-18"> error_outline </i> {{ state.skippedPosts.length }}
       </span>
     </span>
     <button md-icon-button *ngIf="authService.loggedIn()" (click)="authService.logout()">Log Out</button>
@@ -18,8 +23,17 @@
   </md-card>
   <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
 
-    <md-tab label="Посты" *ngIf="posts.length">
-      <md-card *ngFor="let post of posts">
+    <md-tab label="Посты" *ngIf="state.likedPosts.length">
+    <div class="wrapper__pagination_controls">
+        <pagination-controls 
+          class="pagination_controls"
+          (pageChange)="p = $event"
+          previousLabel="Назад"
+          nextLabel="Далее"
+          >
+        </pagination-controls>
+      </div>
+      <md-card *ngFor="let post of state.likedPosts | paginate: { itemsPerPage: 5, currentPage: p }">
       <md-card-header>
         <md-card-title>{{post.date}}</md-card-title>
         <md-card-subtitle *ngIf="post.reposted === 1">
@@ -40,6 +54,15 @@
         </md-card-actions>
 
       </md-card>
+      <div class="wrapper__pagination_controls">
+        <pagination-controls 
+          class="pagination_controls"
+          (pageChange)="p = $event"
+          previousLabel="Назад"
+          nextLabel="Далее"
+          >
+        </pagination-controls>
+      </div>
 
     </md-tab>
 
@@ -93,8 +116,8 @@
             </md-input-container>
             <div class="md-errors-spacer"></div>
 
-            <button md-raised-button color="primary" type="button" [disabled]="searchingIsRunning" (click)="backToUserForm($event)">Вернуться</button>
-            <button md-raised-button color="primary" [disabled]="!wallForm.valid || searchingIsRunning" type="submit">Найти</button>
+            <button md-raised-button color="primary" type="button" [disabled]="state.isGettingPosts || state.isCheckingLikes" (click)="backToUserForm($event)">Вернуться</button>
+            <button md-raised-button color="primary" [disabled]="!wallForm.valid || state.isGettingPosts || state.isCheckingLikes" type="submit">Найти</button>
           </form>
         </md-card-content>
       </md-card>

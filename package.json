@@ -8,7 +8,6 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e",
     "ghb": "ng build --target=production --env=prod --deploy-url=https://dwnste.github.io/vklikedposts/ --base-href=/vklikedposts/ && ln -s dist/index.html dist/404.html"
   },
   "private": true,
@@ -48,6 +47,7 @@
     "karma-jasmine-html-reporter": "^0.2.2",
     "moment": "^2.18.1",
     "ng2-cookies": "^1.0.12",
+    "ngx-pagination": "^3.0.1",
     "protractor": "~5.1.2",
     "query-string": "^4.3.4",
     "ts-node": "~3.0.4",

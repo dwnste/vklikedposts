@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { MaterialModule } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgxPaginationModule} from 'ngx-pagination';
 
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
@@ -19,12 +20,13 @@ import { routing, appRoutingProviders } from './app.routes';
   declarations: [
     AppComponent,
     AuthComponent,
-    FeedComponent
+    FeedComponent,
   ],
   imports: [
     BrowserModule,
     MaterialModule,
     BrowserAnimationsModule,
+    NgxPaginationModule,
     FormsModule,
     routing
   ],

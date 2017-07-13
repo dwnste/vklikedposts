@@ -1,5 +1,6 @@
 import * as fetchJsonp from 'fetch-jsonp';
 import * as moment from 'moment';
+import * as async from 'async';
 
 moment.locale('ru');
 
@@ -101,9 +102,51 @@ export class AppService {
     };
 
     formatPost(post, response) {
-        post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
-        post.date = moment(post.date * 1000).format('LL');
-        post.reposted = response.copied;
-        return post;
+      post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
+      post.date = moment(post.date * 1000).format('LL');
+      post.reposted = response.copied;
+      return post;
     }
+
+    apiQuery(count, apiQueryCallback, httpRequest) {
+        let
+          maxPerRequest = 100,
+          maxRPS = 3,
+          offsetsCount = Math.ceil(count / maxPerRequest),
+          offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i*maxPerRequest}),
+          results = [];
+
+        const queue = async.queue(function (offset, callback) {
+          console.log(+(new Date().getSeconds()) + ' performing offset#' + offset + ' request');
+          return httpRequest(offset)
+                  .then((result) => {
+                    console.log('httprequest_result in service:', result.length)
+                    results = results.concat(result);
+                    return callback();
+                  });
+        }, maxRPS);
+        
+        async.eachLimit(offsets, maxRPS, 
+            function (offset, callback) {
+              console.log('eachLimit_offset:', offset);
+              queue.push(offset, (err) => {
+                if (err) {
+                  console.log(err);
+                }
+              });
+              setTimeout(callback, 1000);
+            },
+            function() {
+              console.log('before drain')
+              queue.drain = function(err) {
+                if (!err) {
+                  console.log('after drain', results)
+                  apiQueryCallback(results);
+                } else {
+                  console.log(err);
+                }
+              }
+            }
+        );
+    };
 }

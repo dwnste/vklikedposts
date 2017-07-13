@@ -1,9 +1,9 @@
-// The file contents for the current environment will overwrite these during build.
-// The build system defaults to the dev environment which uses `environment.ts`, but if you do
-// `ng build --env=prod` then `environment.prod.ts` will be used instead.
-// The list of which env maps to which file can be found in `.angular-cli.json`.
+const
+  CLIENT_ID = 6099251, // your vk app id
+  SCOPE = 8192, // permissions to be able to work with wall api methods. more:  https://vk.com/dev/permissions
+  REDIRECT_URL = 'http://localhost:4200/auth';
 
 export const environment = {
   production: false,
-  get_token_url: 'https://oauth.vk.com/authorize?client_id=6099251&scope=8192&redirect_uri=http://localhost:4200/auth&response_type=token'
+  get_token_url: `https://oauth.vk.com/authorize?client_id=${CLIENT_ID}&scope=${SCOPE}&redirect_uri=${REDIRECT_URL}&response_type=token`
 };

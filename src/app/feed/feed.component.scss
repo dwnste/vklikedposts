@@ -36,6 +36,24 @@ i {
     -moz-osx-font-smoothing: grayscale;
 }
 
+.wrapper__pagination_controls {
+    display: flex;
+    flex-direction: column;
+    .pagination_controls {
+        padding: 0;
+        margin: 0 auto;
+    }
+}
+
+.progress-bar-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+}
+
+
 md-card {
     width: 100%;
     &.mat-card {
