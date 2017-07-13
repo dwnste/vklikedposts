@@ -41,16 +41,20 @@ export class FeedComponent implements OnInit {
     const httpRequest = (offset) => {
       return this.appService.getWallPosts({
               owner_id: owner_id,
-              count: count - offset < 100 ? count - offset : 100,
+              count: ((count - offset) < 100) ? (count - offset) : 100,
               user_access_token: user_access_token,
               offset: offset })
                   .then((response: any) => {
+                    console.log(count, offset, count-offset)
+                    console.log(response.posts)
                     return response.posts;
                   })
       }
   
     return new Promise((resolve, reject) => {
+      console.log('prepromise')
       this.appService.apiQuery(count, (results: any) => {
+        console.log('in promise')
         this.state.isGettingPosts = false;
         resolve(results);
       }, httpRequest);

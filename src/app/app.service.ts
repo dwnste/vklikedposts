@@ -137,14 +137,13 @@ export class AppService {
               setTimeout(callback, 1000);
             },
             function() {
-              console.log('before drain')
-              queue.drain = function(err) {
-                if (!err) {
-                  console.log('after drain', results)
-                  apiQueryCallback(results);
-                } else {
-                  console.log(err);
-                }
+              console.log('hello')
+              if (count < 100 && queue.length() === 0) {
+                apiQueryCallback(results);
+              }
+              queue.drain = function() {
+                console.log('after drain', results)
+                return apiQueryCallback(results);
               }
             }
         );
