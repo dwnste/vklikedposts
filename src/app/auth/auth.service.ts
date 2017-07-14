@@ -3,6 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { Cookie } from 'ng2-cookies/ng2-cookies';
 import { Observable } from 'rxjs/Observable';
 
+import { AppService } from '../app.service';
+
 import * as qs from 'query-string';
 
 import { environment } from '../../environments/environment';
@@ -13,7 +15,8 @@ export class AuthService {
   cookies;
 
   constructor(private activatedRoute: ActivatedRoute,
-              private router: Router) {};
+              private router: Router,
+              public appService: AppService) {};
 
   update() {
     this.cookies = Cookie.getAll();

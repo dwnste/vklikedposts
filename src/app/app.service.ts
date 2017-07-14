@@ -1,22 +1,42 @@
 import * as fetchJsonp from 'fetch-jsonp';
 import * as moment from 'moment';
 import * as async from 'async';
+import * as VK from 'vk-openapi';
+import { Component, OnInit, Injectable } from '@angular/core';
 
 moment.locale('ru');
 
-export class AppService {
+VK.init({apiId: 6099251});
+
+@Injectable()
+export class AppService implements OnInit {
+    myVK = null;
     state = {
         isGettingPosts: false,
+        isCheckingLikes: false
     }
 
-    execute({user_access_token, ...params}) {
-        const a = 'return API.users.get({"user_ids": API.photos.search({"q":"Beatles", "count":3}).items@.owner_id})@.last_name;'
-        const url = `https://api.vk.com/method/execute?code=${a}&access_token=${user_access_token}`
-        return fetchJsonp(url)
-                    .then( response => response.json())
-                    .then( ({ response }) => {
-                        console.log(response);
-                    })
+    ngOnInit() {}
+
+    getApi() {
+        return VK;
+    }
+
+    execute({user_access_token, code}) {
+        return new Promise((resolve, reject) => {
+            VK.Api.call('execute', {code: code}, (response) => {
+                resolve(response);
+            })
+        });
+    }
+
+    bundleQuery(method, posts?, user_id?, owner_id?) {
+        switch (method) {
+            case 'likes.isLiked':
+                return(`return[${posts.map((post) =>
+                    `API.${method}({user_id:${user_id},owner_id:${owner_id},type:"post",item_id:${post.id},v:5.65})`).toString()}];`
+                );
+        }
     }
 
     getUserData({user_id, user_access_token}) {
@@ -115,9 +135,8 @@ export class AppService {
       return post;
     }
 
-    apiQuery(count, apiQueryCallback, httpRequest) {
+    apiQuery(count, apiQueryCallback, httpRequest, maxPerRequest = 100) {
         const
-          maxPerRequest = 100,
           maxRPS = 3,
           offsetsCount = Math.ceil(count / maxPerRequest),
           offsets = Array.apply(null, Array(offsetsCount)).map(function(_, i) { return i * maxPerRequest});
@@ -154,6 +173,15 @@ export class AppService {
             }
         );
     };
+
+    getAllLikedPosts({owner_id, user_id, user_access_token, posts}) {
+        this.state.isCheckingLikes = true;
+        const bundle = this.bundleQuery('likes.isLiked', posts, user_id, owner_id);
+        return this.execute({user_access_token, code: bundle})
+            .then((likes: any) => {
+                return likes.response;
+            })
+    }
 
     getAllWallPosts({owner_id, user_id, user_access_token, count}) {
         this.state.isGettingPosts = true;

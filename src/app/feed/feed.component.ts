@@ -139,38 +139,36 @@ export class FeedComponent implements OnInit {
       this.state.isCheckingLikes = true;
       if (posts) {
         let timeleft = 0;
-        posts.map((post) => {
+        const chunk = 25;
+        for (let i = 0, j = posts.length; i < j; i += chunk) {
           timeleft += this.TIMEOUT_STEP;
+          const temparray = posts.slice(i, i + chunk);
           setTimeout(() => {
             this.appService
-            .isLiked({
-              user_id: user_id,
-              type: 'post',
-              owner_id: owner_id,
-              item_id: post.id,
-              user_access_token: user_access_token
-            })
-            .then((response: any) => {
-              this.state.page.counter += 1;
-              if (response && 'liked' in response) {
-                if (Boolean(response.liked)) {
-                  this.state.posts.liked.push(this.appService.formatPost(post, response));
+              .getAllLikedPosts({
+                owner_id,
+                user_id,
+                user_access_token,
+                posts: temparray
+              })
+              .then((likes) => {
+                for (const post of temparray) {
+                  if (likes[temparray.indexOf(post)].liked === 1) {
+                    this.state.posts.liked
+                      .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
+                  }
+                  this.state.page.counter += 1;
                 }
-              } else {
-                this.state.posts.skipped.push(post);
-                console.log('problems with getting response, skipped')
-              }
+                if (this.state.page.counter === posts.length) {
+                  this.state.isCheckingLikes = false;
 
-              if (this.state.page.counter === posts.length) {
-                this.state.isCheckingLikes = false;
-
-                if (!this.state.posts.liked.length) {
-                  this.showError('Результат', 'не найдено ни одного поста с лайком');
+                  if (!this.state.posts.liked.length) {
+                    this.showError('Результат', 'не найдено ни одного поста с лайком');
+                  }
                 }
-              }
-            });
-        }, timeleft);
-      });
+              });
+          }, timeleft);
+        }
       this.state.page.timer = timeleft;
       } else {
         this.showError('Ошибка', 'не получилось запросить посты');
