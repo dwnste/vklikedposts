@@ -1,7 +1,7 @@
 <!--The whole content below can be removed with the new code.-->
 <div>
   <div class="progress-bar-container">
-    <md-progress-bar *ngIf="state.isGettingPosts" mode="indeterminate" color="secondary"></md-progress-bar>
+    <md-progress-bar *ngIf="appService.state.isGettingPosts" mode="indeterminate" color="secondary"></md-progress-bar>
   </div>
   <md-toolbar color="primary">
     <span>
@@ -9,8 +9,8 @@
       <span *ngIf="((timer - counter * TIMEOUT_STEP) / 1000) > 0"> | 
         <i class="material-icons md-18"> access_time </i> {{ showTimer(timer, counter, TIMEOUT_STEP) }}
       </span>
-      <span *ngIf="state.skippedPosts.length"> |
-        <i class="material-icons md-18"> error_outline </i> {{ state.skippedPosts.length }}
+      <span *ngIf="state.posts.skipped.length"> |
+        <i class="material-icons md-18"> error_outline </i> {{ state.posts.skipped.length }}
       </span>
     </span>
     <button md-icon-button *ngIf="authService.loggedIn()" (click)="authService.logout()">Log Out</button>
@@ -23,7 +23,7 @@
   </md-card>
   <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
 
-    <md-tab label="Посты" *ngIf="state.likedPosts.length">
+    <md-tab label="Посты" *ngIf="state.posts.liked.length">
     <div class="wrapper__pagination_controls">
         <pagination-controls 
           class="pagination_controls"
@@ -33,7 +33,7 @@
           >
         </pagination-controls>
       </div>
-      <md-card *ngFor="let post of state.likedPosts | paginate: { itemsPerPage: 5, currentPage: p }">
+      <md-card *ngFor="let post of state.posts.liked | paginate: { itemsPerPage: 5, currentPage: p }">
       <md-card-header>
         <md-card-title>{{post.date}}</md-card-title>
         <md-card-subtitle *ngIf="post.reposted === 1">
@@ -66,7 +66,7 @@
 
     </md-tab>
 
-    <md-tab label="Пользователь" *ngIf="!currentUser.uid || currentUser.deactivated">
+    <md-tab label="Пользователь" *ngIf="!state.user.uid || state.user.deactivated">
       <md-card>
         <md-card-content>
           <form novalidate (submit)="submitUserForm($event, userForm.value)" #userForm="ngForm">
@@ -82,13 +82,13 @@
 
     </md-tab>
 
-    <md-tab label="Поиск лайков" *ngIf="currentUser.uid && !currentUser.deactivated">
+    <md-tab label="Поиск лайков" *ngIf="state.user.uid && !state.user.deactivated">
       <md-card>
         <md-card-header>
-          <div md-card-avatar><img src="{{currentUser.photo_50}}" alt=""></div>
-          <md-card-title>{{currentUser.first_name}} {{currentUser.last_name}}</md-card-title>
-          <md-card-subtitle *ngIf="currentUser.online === 1">Online</md-card-subtitle>
-          <md-radio-group *ngIf="currentUserGroups.length" name="radio" [(ngModel)]="radio">
+          <div md-card-avatar><img src="{{state.user.photo_50}}" alt=""></div>
+          <md-card-title>{{state.user.first_name}} {{state.user.last_name}}</md-card-title>
+          <md-card-subtitle *ngIf="state.user.online === 1">Online</md-card-subtitle>
+          <md-radio-group *ngIf="state.groups.current.length" name="radio" [(ngModel)]="radio">
             <md-radio-button value="user_groups">Группы пользователя</md-radio-button>
             <md-radio-button value="other_groups">Другие группы</md-radio-button>
           </md-radio-group>
@@ -104,7 +104,7 @@
                         ngModel 
                         name="group_id"
                         placeholder="Группы пользователя">
-              <md-option mdInput *ngFor="let group of currentUserGroups" [value]="group.gid * -1">
+              <md-option mdInput *ngFor="let group of state.groups.current" [value]="group.gid * -1">
                 <img src="{{group.photo}}">
                 {{group.name}}
               </md-option>
@@ -116,8 +116,8 @@
             </md-input-container>
             <div class="md-errors-spacer"></div>
 
-            <button md-raised-button color="primary" type="button" [disabled]="state.isGettingPosts || state.isCheckingLikes" (click)="backToUserForm($event)">Вернуться</button>
-            <button md-raised-button color="primary" [disabled]="!wallForm.valid || state.isGettingPosts || state.isCheckingLikes" type="submit">Найти</button>
+            <button md-raised-button color="primary" type="button" [disabled]="appService.state.isGettingPosts || state.isCheckingLikes" (click)="backToUserForm($event)">Вернуться</button>
+            <button md-raised-button color="primary" [disabled]="!wallForm.valid || appService.state.isGettingPosts || state.isCheckingLikes" type="submit">Найти</button>
           </form>
         </md-card-content>
       </md-card>

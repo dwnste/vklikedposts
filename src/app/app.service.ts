@@ -5,6 +5,10 @@ import * as async from 'async';
 moment.locale('ru');
 
 export class AppService {
+    state = {
+        isGettingPosts: false,
+    }
+
     execute({user_access_token, ...params}) {
         const a = 'return API.users.get({"user_ids": API.photos.search({"q":"Beatles", "count":3}).items@.owner_id})@.last_name;'
         const url = `https://api.vk.com/method/execute?code=${a}&access_token=${user_access_token}`
@@ -128,9 +132,10 @@ export class AppService {
                   });
         }, maxRPS);
 
-        async.eachLimit(offsets, maxRPS,
+        async.eachLimit(
+            offsets,
+            maxRPS,
             function (offset, callback) {
-
               queue.push(offset, (err) => {
                 if (err) {
                   console.log(err);
@@ -149,4 +154,26 @@ export class AppService {
             }
         );
     };
+
+    getAllWallPosts({owner_id, user_id, user_access_token, count}) {
+        this.state.isGettingPosts = true;
+
+        const httpRequest = (offset) => {
+          return this.getWallPosts({
+                        owner_id: owner_id,
+                        count: ((count - offset) < 100) ? (count - offset) : 100,
+                        user_access_token: user_access_token,
+                        offset: offset })
+                      .then((response: any) => {
+                        return response.posts;
+                      })
+          }
+
+        return new Promise((resolve, reject) => {
+          this.apiQuery(count, (results: any) => {
+            this.state.isGettingPosts = false;
+            resolve(results);
+          }, httpRequest);
+        });
+      }
 }

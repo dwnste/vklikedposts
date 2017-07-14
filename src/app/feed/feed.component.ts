@@ -13,20 +13,23 @@ import { AuthService } from '../auth/auth.service';
 })
 export class FeedComponent implements OnInit {
   state = {
-    likedPosts: [],
-    skippedPosts: [],
-    isGettingPosts: false,
-    isCheckingLikes: false
+    isCheckingLikes: false,
+    user: <any> {},
+    groups: <any>{
+      offset: 0,
+      available: 0,
+      current: []
+    },
+    posts: <any>{
+      liked: [],
+      skipped: []
+    }
   }
 
-  p: number = 1;
+  p = <number>1;
   readonly TIMEOUT_STEP = 400;
-  groupOffset = 0;
-  groupsAvailable = 0;
-  currentUser = <any>{};
-  currentUserGroups = [];
+
   radio = 'user_groups' // 'other_groups'
-  posts = [];
   timer = 0;
   counter = 0;
   selectedTab = 1;
@@ -40,38 +43,17 @@ export class FeedComponent implements OnInit {
       event.preventDefault();
     }
     if (removeUserData) {
-      this.currentUser = <any>{};
-      this.currentUserGroups = [];
+      this.state.user = <any>{};
+      this.state.groups.current = [];
     }
-    this.state.skippedPosts = []
+    this.state.posts.skipped = [];
     this.radio = 'user_groups';
-    this.state.likedPosts = [];
-    this.groupOffset = 0;
-    this.groupsAvailable = 0;
+    this.state.posts.liked = [];
+    this.state.groups.offset = 0;
+    this.state.groups.available = 0;
     this.timer = 0;
     this.counter = 0;
     this.selectedTab = 0;
-  }
-  getAllWallPosts({owner_id, user_id, user_access_token, count}) {
-    this.state.isGettingPosts = true;
-
-    const httpRequest = (offset) => {
-      return this.appService.getWallPosts({
-              owner_id: owner_id,
-              count: ((count - offset) < 100) ? (count - offset) : 100,
-              user_access_token: user_access_token,
-              offset: offset })
-                  .then((response: any) => {
-                    return response.posts;
-                  })
-      }
-
-    return new Promise((resolve, reject) => {
-      this.appService.apiQuery(count, (results: any) => {
-        this.state.isGettingPosts = false;
-        resolve(results);
-      }, httpRequest);
-    });
   }
 
   filterLikedPosts({owner_id, user_id, user_access_token, posts}) {
@@ -94,17 +76,17 @@ export class FeedComponent implements OnInit {
                 this.counter += 1;
                 if (response && 'liked' in response) {
                   if (Boolean(response.liked)) {
-                    this.state.likedPosts.push(this.appService.formatPost(post, response));
+                    this.state.posts.liked.push(this.appService.formatPost(post, response));
                   }
                 } else {
-                  this.state.skippedPosts.push(post);
+                  this.state.posts.skipped.push(post);
                   console.log('problems with getting response, skipped')
                 }
 
                 if (this.counter === posts.length) {
                   this.state.isCheckingLikes = false;
 
-                  if (!this.state.likedPosts.length) {
+                  if (!this.state.posts.liked.length) {
                     this.snackBar.open('Ни одного поста с лайком', 'ОК');
                   }
                 }
@@ -118,7 +100,7 @@ export class FeedComponent implements OnInit {
   }
 
   getLikedPosts({owner_id, user_id, user_access_token, count}) {
-    this.getAllWallPosts({ owner_id, user_id, user_access_token, count })
+    this.appService.getAllWallPosts({ owner_id, user_id, user_access_token, count })
       .then((posts: any) => {
         this.filterLikedPosts({ owner_id, user_id, user_access_token, posts })
       })
@@ -144,7 +126,10 @@ export class FeedComponent implements OnInit {
   submitUserForm(event: Event, data: any) {
     event.preventDefault();
     if (data.user_id >= 0) {
-      this.getUserAndUserGroups({user_id: data.user_id, user_access_token: this.authService.cookies.access_token});
+      this.getUserAndUserGroups({
+        user_id: data.user_id,
+        user_access_token: this.authService.cookies.access_token
+      });
     } else {
       this.snackBar.open('Неправильный ID пользователя', 'ОК');
     }
@@ -154,9 +139,10 @@ export class FeedComponent implements OnInit {
     this.setDefault(event);
     this.getLikedPosts({
       owner_id: data.form.value.group_id,
-      user_id: this.currentUser.uid,
+      user_id: this.state.user.uid,
       count: data.form.value.posts_count,
-      user_access_token: this.authService.cookies.access_token});
+      user_access_token: this.authService.cookies.access_token
+    });
   }
 
   getUserAndUserGroups({user_id, user_access_token}) {
@@ -166,32 +152,32 @@ export class FeedComponent implements OnInit {
           if (!response) {
             this.showError();
           } else {
-            this.currentUser = response[0];
-            if ('deactivated' in this.currentUser) {
-              this.snackBar.open(`Профиль имеет статус: ${this.currentUser.deactivated}`, 'OK')
+            this.state.user = response[0];
+            if ('deactivated' in this.state.user) {
+              this.snackBar.open(`Профиль имеет статус: ${this.state.user.deactivated}`, 'OK')
             } else {
               this.appService
-                .getUserGroups({user_id: this.currentUser.uid,
+                .getUserGroups({user_id: this.state.user.uid,
                                 user_access_token: this.authService.cookies.access_token,
                                 count: 100})
                   .then((groups_response: any) => {
                     let groupList = [];
                     if (Boolean(groups_response)) {
-                      this.groupsAvailable = groups_response.available;
+                      this.state.groups.available = groups_response.available;
                       groupList = groups_response.groups.filter((group) => {
                         if (!group.deactivated) {
                           return group;
                         }
                       });
                       if (groupList.length) {
-                        this.currentUserGroups = groupList;
+                        this.state.groups.current = groupList;
                       } else {
                         this.radio = 'other_groups';
-                        this.currentUserGroups = [];
+                        this.state.groups.current = [];
                       }
                     } else {
                       this.radio = 'other_groups';
-                      this.currentUserGroups = [];
+                      this.state.groups.current = [];
                     }
                   })
             }
@@ -204,16 +190,16 @@ export class FeedComponent implements OnInit {
   }
 
   getMoreGroups() {
-    this.groupOffset += 100;
+    this.state.groups.offset += 100;
     this.appService
-      .getUserGroups({user_id: this.currentUser.uid,
+      .getUserGroups({user_id: this.state.user.uid,
                       user_access_token: this.authService.cookies.access_token,
-                      count: 100, offset: this.groupOffset})
+                      count: 100, offset: this.state.groups.offset})
       .then((response: any) => {
         if (response) {
           const groupList = response.groups.filter((group) => {
             if (!group.deactivated) {
-              this.currentUserGroups.push(group);
+              this.state.groups.current.push(group);
             }
           });
         }
