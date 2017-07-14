@@ -60,9 +60,9 @@ export class FeedComponent implements OnInit {
   filterLikedPosts({owner_id, user_id, user_access_token, posts}) {
     this.state.isCheckingLikes = true;
       if (posts) {
-        let timeOut = 0;
+        let timeleft = 0;
         posts.map((post) => {
-          timeOut += this.TIMEOUT_STEP;
+          timeleft += this.TIMEOUT_STEP;
           setTimeout(() => {
             this.appService
               .isLiked({
@@ -73,7 +73,6 @@ export class FeedComponent implements OnInit {
                 user_access_token: user_access_token
               })
               .then((response: any) => {
-
                 this.state.page.counter += 1;
                 if (response && 'liked' in response) {
                   if (Boolean(response.liked)) {
@@ -92,9 +91,9 @@ export class FeedComponent implements OnInit {
                   }
                 }
               });
-          }, timeOut);
+          }, timeleft);
         });
-      this.state.page.timer = timeOut;
+      this.state.page.timer = timeleft;
       } else {
         this.snackBar.open('Не получилось запросить посты', 'ОК')
       }
@@ -109,7 +108,7 @@ export class FeedComponent implements OnInit {
 
   showOriginal(post) {
     if (post.post_type === 'post') {
-      document.location.href = `https://vk.com/wall${post.to_id}_${post.id}`
+      window.open(`https://vk.com/wall${post.to_id}_${post.id}`, '_blank');
     }
   }
 
