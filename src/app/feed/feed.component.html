@@ -6,8 +6,8 @@
   <md-toolbar color="primary">
     <span>
       <a [routerLink]="['/']">VK Liked Posts</a>
-      <span *ngIf="((timer - counter * TIMEOUT_STEP) / 1000) > 0"> | 
-        <i class="material-icons md-18"> access_time </i> {{ showTimer(timer, counter, TIMEOUT_STEP) }}
+      <span *ngIf="((state.page.timer - state.page.counter * TIMEOUT_STEP) / 1000) > 0"> | 
+        <i class="material-icons md-18"> access_time </i> {{ showTimer(state.page.timer, state.page.counter, TIMEOUT_STEP) }}
       </span>
       <span *ngIf="state.posts.skipped.length"> |
         <i class="material-icons md-18"> error_outline </i> {{ state.posts.skipped.length }}
@@ -21,19 +21,19 @@
       Для взаимодействия с данными VK.com требуется авторизация!
     </span>
   </md-card>
-  <md-tab-group [selectedIndex]="selectedTab" *ngIf="authService.loggedIn()">
+  <md-tab-group [selectedIndex]="state.page.tab" *ngIf="authService.loggedIn()">
 
     <md-tab label="Посты" *ngIf="state.posts.liked.length">
     <div class="wrapper__pagination_controls">
         <pagination-controls 
           class="pagination_controls"
-          (pageChange)="p = $event"
+          (pageChange)="state.page.p = $event"
           previousLabel="Назад"
           nextLabel="Далее"
           >
         </pagination-controls>
       </div>
-      <md-card *ngFor="let post of state.posts.liked | paginate: { itemsPerPage: 5, currentPage: p }">
+      <md-card *ngFor="let post of state.posts.liked | paginate: { itemsPerPage: 5, currentPage: state.page.p }">
       <md-card-header>
         <md-card-title>{{post.date}}</md-card-title>
         <md-card-subtitle *ngIf="post.reposted === 1">
@@ -57,7 +57,7 @@
       <div class="wrapper__pagination_controls">
         <pagination-controls 
           class="pagination_controls"
-          (pageChange)="p = $event"
+          (pageChange)="state.page.p = $event"
           previousLabel="Назад"
           nextLabel="Далее"
           >
@@ -88,18 +88,18 @@
           <div md-card-avatar><img src="{{state.user.photo_50}}" alt=""></div>
           <md-card-title>{{state.user.first_name}} {{state.user.last_name}}</md-card-title>
           <md-card-subtitle *ngIf="state.user.online === 1">Online</md-card-subtitle>
-          <md-radio-group *ngIf="state.groups.current.length" name="radio" [(ngModel)]="radio">
+          <md-radio-group *ngIf="state.groups.current.length" name="radio" [(ngModel)]="state.page.radio">
             <md-radio-button value="user_groups">Группы пользователя</md-radio-button>
             <md-radio-button value="other_groups">Другие группы</md-radio-button>
           </md-radio-group>
         </md-card-header>
         <md-card-content>
           <form novalidate (submit)="submitWallForm($event, wallForm)" #wallForm="ngForm">
-            <md-input-container *ngIf="radio === 'other_groups'" class="md-block">
+            <md-input-container *ngIf="state.page.radio === 'other_groups'" class="md-block">
               <input mdInput ngModel required name="group_id" placeholder="ID где искать" type="number">
             </md-input-container>
 
-            <md-select *ngIf="radio === 'user_groups'"
+            <md-select *ngIf="state.page.radio === 'user_groups'"
                         required 
                         ngModel 
                         name="group_id"

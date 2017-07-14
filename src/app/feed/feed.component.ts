@@ -23,16 +23,18 @@ export class FeedComponent implements OnInit {
     posts: <any>{
       liked: [],
       skipped: []
+    },
+    page: <any>{
+      radio: 'user_groups', // 'user_groups' == from the list, 'other_groups' == show input text field
+      tab: <number>1, // current selected tab
+      counter: <number>0, // how much posts has been filtered by filterLikedPosts()
+      timer: <number>0, // timeleft before filterLikedPosts() will be finished (approximate, in miliseconds)
+      p: <number>1, // current page of 'Посты' tab's pagination
     }
   }
 
-  p = <number>1;
   readonly TIMEOUT_STEP = 400;
-
-  radio = 'user_groups' // 'other_groups'
-  timer = 0;
-  counter = 0;
-  selectedTab = 1;
+  readonly MAX_ALLOWED = 100;
 
   constructor(private appService: AppService,
               public authService: AuthService,
@@ -47,13 +49,12 @@ export class FeedComponent implements OnInit {
       this.state.groups.current = [];
     }
     this.state.posts.skipped = [];
-    this.radio = 'user_groups';
     this.state.posts.liked = [];
     this.state.groups.offset = 0;
     this.state.groups.available = 0;
-    this.timer = 0;
-    this.counter = 0;
-    this.selectedTab = 0;
+    this.state.page.timer = 0;
+    this.state.page.counter = 0;
+    this.state.page.tab = 0;
   }
 
   filterLikedPosts({owner_id, user_id, user_access_token, posts}) {
@@ -73,7 +74,7 @@ export class FeedComponent implements OnInit {
               })
               .then((response: any) => {
 
-                this.counter += 1;
+                this.state.page.counter += 1;
                 if (response && 'liked' in response) {
                   if (Boolean(response.liked)) {
                     this.state.posts.liked.push(this.appService.formatPost(post, response));
@@ -83,7 +84,7 @@ export class FeedComponent implements OnInit {
                   console.log('problems with getting response, skipped')
                 }
 
-                if (this.counter === posts.length) {
+                if (this.state.page.counter === posts.length) {
                   this.state.isCheckingLikes = false;
 
                   if (!this.state.posts.liked.length) {
@@ -93,7 +94,7 @@ export class FeedComponent implements OnInit {
               });
           }, timeOut);
         });
-      this.timer = timeOut;
+      this.state.page.timer = timeOut;
       } else {
         this.snackBar.open('Не получилось запросить посты', 'ОК')
       }
@@ -159,7 +160,7 @@ export class FeedComponent implements OnInit {
               this.appService
                 .getUserGroups({user_id: this.state.user.uid,
                                 user_access_token: this.authService.cookies.access_token,
-                                count: 100})
+                                count: this.MAX_ALLOWED})
                   .then((groups_response: any) => {
                     let groupList = [];
                     if (Boolean(groups_response)) {
@@ -172,11 +173,11 @@ export class FeedComponent implements OnInit {
                       if (groupList.length) {
                         this.state.groups.current = groupList;
                       } else {
-                        this.radio = 'other_groups';
+                        this.state.page.radio = 'other_groups';
                         this.state.groups.current = [];
                       }
                     } else {
-                      this.radio = 'other_groups';
+                      this.state.page.radio = 'other_groups';
                       this.state.groups.current = [];
                     }
                   })
@@ -190,11 +191,11 @@ export class FeedComponent implements OnInit {
   }
 
   getMoreGroups() {
-    this.state.groups.offset += 100;
+    this.state.groups.offset += this.MAX_ALLOWED;
     this.appService
       .getUserGroups({user_id: this.state.user.uid,
                       user_access_token: this.authService.cookies.access_token,
-                      count: 100, offset: this.state.groups.offset})
+                      count: this.MAX_ALLOWED, offset: this.state.groups.offset})
       .then((response: any) => {
         if (response) {
           const groupList = response.groups.filter((group) => {
