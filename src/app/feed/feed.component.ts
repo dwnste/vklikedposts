@@ -66,7 +66,7 @@ export class FeedComponent implements OnInit {
     showError(error?: string, error_description?: string) {
       if (error && error_description) {
         this.snackBar.open(
-          `${error.replace('+', ' ')}: ${error_description}.replace('+', ' ')`,
+          `${error.replace('+', ' ')}: ${error_description.replace('+', ' ')}`,
           'ОК'
         );
       } else {
@@ -87,13 +87,13 @@ export class FeedComponent implements OnInit {
       .getUserData({user_id: user_id, user_access_token: user_access_token})
       .then((response) => {
         if (!response) {
-          this.showError();
+          this.showError('Не удалось получить информацию о пользователе', 'истёк срок действия авторизации');
         } else if ('error' in response && 'error_description' in response) {
           this.showError(response.error, response.error_description);
         } else {
           this.state.user = response[0];
           if ('deactivated' in this.state.user) {
-            this.snackBar.open(`Профиль имеет статус: ${this.state.user.deactivated}`, 'OK')
+            this.showError('Не удалось получить данные о пользователе', `профиль имеет статус: ${this.state.user.deactivated}`)
           } else {
             this.appService
             .getUserGroups({user_id: this.state.user.uid,
@@ -165,7 +165,7 @@ export class FeedComponent implements OnInit {
                 this.state.isCheckingLikes = false;
 
                 if (!this.state.posts.liked.length) {
-                  this.snackBar.open('Ни одного поста с лайком', 'ОК');
+                  this.showError('Результат', 'не найдено ни одного поста с лайком');
                 }
               }
             });
@@ -173,7 +173,7 @@ export class FeedComponent implements OnInit {
       });
       this.state.page.timer = timeleft;
       } else {
-        this.snackBar.open('Не получилось запросить посты', 'ОК')
+        this.showError('Ошибка', 'не получилось запросить посты');
       }
   }
 
@@ -192,7 +192,7 @@ export class FeedComponent implements OnInit {
         user_access_token: this.authService.cookies.access_token
       });
     } else {
-      this.snackBar.open('Неправильный ID пользователя', 'ОК');
+      this.showError('Неправильный ID', 'ID пользователя может состоять только из цифр от 0 до 9!')
     }
   }
 
