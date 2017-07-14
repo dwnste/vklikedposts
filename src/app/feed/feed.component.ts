@@ -36,7 +36,7 @@ export class FeedComponent implements OnInit {
   readonly TIMEOUT_STEP = 400;
   readonly MAX_ALLOWED = 100;
 
-  constructor(private appService: AppService,
+  constructor(public appService: AppService,
     public authService: AuthService,
     public snackBar: MdSnackBar) {}
 
