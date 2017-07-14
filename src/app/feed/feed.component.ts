@@ -114,13 +114,10 @@ export class FeedComponent implements OnInit {
 
   showError(error?, error_description?) {
     this.snackBar.open('Что-то пошло не так', 'ОК');
-    console.log('No response, sorry');
   }
 
   showTimer = (timer, counter, TIMEOUT_STEP) => {
-    const timeBase = (timer - counter * TIMEOUT_STEP) / 1000;
-    return timeBase + 'СЕК';
-
+    return ((timer - counter * TIMEOUT_STEP) / 1000) + ' сек';
   }
 
   submitUserForm(event: Event, data: any) {
@@ -161,23 +158,17 @@ export class FeedComponent implements OnInit {
                                 user_access_token: this.authService.cookies.access_token,
                                 count: this.MAX_ALLOWED})
                   .then((groups_response: any) => {
-                    let groupList = [];
                     if (Boolean(groups_response)) {
                       this.state.groups.available = groups_response.available;
-                      groupList = groups_response.groups.filter((group) => {
+                      this.state.groups.current = groups_response.groups.filter((group) => {
                         if (!group.deactivated) {
                           return group;
                         }
                       });
-                      if (groupList.length) {
-                        this.state.groups.current = groupList;
-                      } else {
+                      if (!this.state.groups.current.length || !Boolean(groups_response)) {
                         this.state.page.radio = 'other_groups';
                         this.state.groups.current = [];
                       }
-                    } else {
-                      this.state.page.radio = 'other_groups';
-                      this.state.groups.current = [];
                     }
                   })
             }
