@@ -6,8 +6,8 @@
   <md-toolbar color="primary">
     <span>
       <a [routerLink]="['/']">VK Liked Posts</a>
-      <span *ngIf="((state.page.timer - state.page.counter * TIMEOUT_STEP) / 1000) > 0"> | 
-        <i class="material-icons md-18"> access_time </i> {{ showTimer(state.page.timer, state.page.counter, TIMEOUT_STEP) }}
+      <span *ngIf="((state.page.timer - state.page.qcounter * TIMEOUT_STEP) / 1000) > 0"> | 
+        <i class="material-icons md-18"> access_time </i> {{ showTimer(state.page.timer, state.page.qcounter, TIMEOUT_STEP) }}
       </span>
       <span *ngIf="state.posts.skipped.length"> |
         <i class="material-icons md-18"> error_outline </i> {{ state.posts.skipped.length }}

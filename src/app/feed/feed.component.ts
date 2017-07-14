@@ -28,6 +28,7 @@ export class FeedComponent implements OnInit {
       radio: 'user_groups', // 'user_groups' == from the list, 'other_groups' == show input text field
       tab: <number>1, // current selected tab
       counter: <number>0, // how much posts has been filtered by filterLikedPosts()
+      qcounter: <number>0, // how much queue has been made
       timer: <number>0, // timeleft before filterLikedPosts() will be finished (approximate, in miliseconds)
       p: <number>1, // current page of 'Посты' tab's pagination
     }
@@ -54,6 +55,7 @@ export class FeedComponent implements OnInit {
       this.state.groups.available = 0;
       this.state.page.timer = 0;
       this.state.page.counter = 0;
+      this.state.page.qcounter = 0;
       this.state.page.tab = 0;
     }
 
@@ -152,6 +154,7 @@ export class FeedComponent implements OnInit {
                 posts: temparray
               })
               .then((likes) => {
+                this.state.page.qcounter += 1;
                 for (const post of temparray) {
                   if (likes[temparray.indexOf(post)].liked === 1) {
                     this.state.posts.liked
