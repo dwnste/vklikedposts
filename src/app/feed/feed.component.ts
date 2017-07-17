@@ -53,9 +53,10 @@ export class FeedComponent implements OnInit {
       this.state.posts.all = [];
       this.state.groups.offset = 0;
       this.state.groups.available = 0;
-      this.state.page.timer = 0;
       this.state.page.counter = 0;
       this.state.page.tab = 0;
+
+      this.appService.state.wallGetResultsPercentage = 0
     }
 
     showOriginal(post) {

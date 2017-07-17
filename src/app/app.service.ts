@@ -131,23 +131,29 @@ export class AppService {
 
     getAllWallPosts({owner_id, user_id, user_access_token, count}) {
         this.state.isGettingPosts = true;
+        return this.getWallPosts({owner_id, user_access_token, count: 1, offset: 0})
+          .then((posts: any) => {
+            if (count > posts.count) {
+              count = posts.count;
+            }
+            const httpRequest = (offset) => {
+              return this.getWallPosts({
+                            owner_id: owner_id,
+                            count: ((count - offset) < 100) ? (count - offset) : 100,
+                            user_access_token: user_access_token,
+                            offset: offset })
+                          .then((response: any) => {
+                            return response.items;
+                          })
+              }
 
-        const httpRequest = (offset) => {
-          return this.getWallPosts({
-                        owner_id: owner_id,
-                        count: ((count - offset) < 100) ? (count - offset) : 100,
-                        user_access_token: user_access_token,
-                        offset: offset })
-                      .then((response: any) => {
-                        return response.items;
-                      })
-          }
+            return new Promise((resolve, reject) => {
+              this.apiQuery(count, (results: any) => {
+                this.state.isGettingPosts = false;
+                resolve(results);
+              }, httpRequest);
+            });
+          });
 
-        return new Promise((resolve, reject) => {
-          this.apiQuery(count, (results: any) => {
-            this.state.isGettingPosts = false;
-            resolve(results);
-          }, httpRequest);
-        });
       }
 }
