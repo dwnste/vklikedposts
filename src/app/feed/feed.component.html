@@ -51,7 +51,7 @@
       <!-- FIX ME -->
       <div *ngIf="post.attachments">
         <span *ngFor="let attachment of post.attachments">
-          <img *ngIf="attachment.type === 'link'" md-card-image src="{{attachment.link.photo.photo_604}}" alt="">
+          <img *ngIf="attachment.type === 'link'" sm-media align="right" src="{{attachment.link.photo.photo_75}}" alt="">
           <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
         </span>
       </div>
