@@ -61,7 +61,7 @@ export class FeedComponent implements OnInit {
 
     showOriginal(post) {
       if (post.post_type === 'post') {
-        window.open(`https://vk.com/wall${post.to_id}_${post.id}`, '_blank');
+        window.open(`https://vk.com/wall${post.from_id}_${post.id}`, '_blank');
       }
     }
 
@@ -128,7 +128,7 @@ export class FeedComponent implements OnInit {
                         count: this.MAX_ALLOWED, offset: this.state.groups.offset})
         .then((response: any) => {
           if (response) {
-            const groupList = response.groups.filter((group) => {
+            const groupList = response.items.filter((group) => {
               if (!group.deactivated) {
                 this.state.groups.current.push(group);
               }

@@ -110,7 +110,7 @@
                 <img src="{{group.photo_50}}">
                 {{group.name}}
               </md-option>
-              <button md-button *ngIf="groupsAvailable >= groupOffset" (click)="getMoreGroups()" style="width: 100%; height: 40px;">Загрузить ещё</button>
+              <button md-button *ngIf="state.groups.available >= state.groups.offset" (click)="getMoreGroups()" style="width: 100%; height: 40px;">Загрузить ещё</button>
             </md-select>
 
             <md-input-container class="md-block">

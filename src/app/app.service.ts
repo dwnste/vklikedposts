@@ -119,11 +119,13 @@ export class AppService {
     };
 
     getAllLikedPosts({owner_id, user_id, user_access_token, posts}) {
-        const bundle = this.bundleQuery('likes.isLiked', posts, user_id, owner_id);
-        return this.execute({user_access_token, code: bundle})
-            .then((likes: any) => {
-                return likes.response;
-            })
+        return this.execute({
+          user_access_token,
+          code: this.bundleQuery('likes.isLiked', posts, user_id, owner_id)
+        })
+        .then((likes: any) => {
+            return likes.response;
+        })
     }
 
     getAllWallPosts({owner_id, user_id, user_access_token, count}) {
