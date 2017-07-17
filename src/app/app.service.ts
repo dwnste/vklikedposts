@@ -1,8 +1,9 @@
-import * as fetchJsonp from 'fetch-jsonp';
 import * as moment from 'moment';
 import * as async from 'async';
 import * as VK from 'vk-openapi';
 import { Component, Injectable } from '@angular/core';
+
+const API_VERSION = 5.67;
 
 moment.locale('ru');
 
@@ -14,94 +15,62 @@ export class AppService {
         isGettingPosts: false,
     }
 
-    getApi() {
-        return VK;
-    }
-
-    execute({user_access_token, code}) {
-        return new Promise((resolve, reject) => {
-            VK.Api.call('execute', {code: code}, (response) => {
-                resolve(response);
-            })
-        });
-    }
-
-    bundleQuery(method, posts?, user_id?, owner_id?) {
-        switch (method) {
-            case 'likes.isLiked':
-                return(`return[${posts.map((post) =>
-                    `API.${method}({user_id:${user_id},owner_id:${owner_id},type:"post",item_id:${post.id},v:5.65})`).toString()}];`
-                );
-        }
-    }
-
     getUserData({user_id, user_access_token}) {
-        const url = `
-            https://api.vk.com/api.php?
-                oauth=1&
-                method=users.get&
-                user_ids=${user_id}&
-                name_case=Nom&
-                fields=photo_50,online&
-                access_token=${user_access_token}`
-                .replace(/ /g, '')
-                .replace(/\n/g, '');
-
-        return fetchJsonp(url)
-                .then( response => response.json())
-                .then( ({ response }) => response)
-                .catch( ex => console.log('parsing failed', ex) );
-    };
+      return new Promise((resolve, reject) => {
+        VK.Api.call('users.get', {
+          user_ids: user_id,
+          name_case: 'Nom',
+          fields: 'photo_50,online',
+          version: API_VERSION,
+          access_token: user_access_token}, (data) => {
+            resolve(data.response);
+          });
+      });
+    }
 
     getUserGroups({user_id, user_access_token, count, offset = 0}) {
-        const url = `
-        https://api.vk.com/api.php?
-            oauth=1&
-            extended=1&
-            method=groups.get&
-            user_id=${user_id}&
-            offset=${offset}&
-            count=${count}&
-            access_token=${user_access_token}`
-                .replace(/ /g, '')
-                .replace(/\n/g, '');
-
-        return fetchJsonp(url)
-                .then( response => response.json())
-                .then( ({ response }) => {
-                    if (response) {
-                      const [available, ...groups] = response;
-                      return {available, groups};
-                    }
-                    return null;
-                  })
-                .catch( ex => console.log('parsing failed', ex) );
-    };
+      return new Promise((resolve, reject) => {
+        VK.Api.call('groups.get', {
+          extended: '1',
+          user_id,
+          offset,
+          count,
+          v: API_VERSION,
+          access_token: user_access_token}, (data) => {
+            resolve(data.response);
+          });
+      });
+    }
 
     getWallPosts({owner_id, user_access_token, count, offset}) {
-        const url = `
-        https://api.vk.com/api.php?
-            oauth=1&
-            method=wall.get&
-            owner_id=${owner_id}&
-            offset=${offset}&
-            count=${count}&
-            filter=all&
-            access_token=${user_access_token}`
-                .replace(/ /g, '')
-                .replace(/\n/g, '');
-
-        return fetchJsonp(url)
-                .then( response => response.json())
-                .then( ({ response }) => {
-                            if (response) {
-                                const [available, ...posts] = response;
-                                return {available, posts};
-                            }
-                            return null;
-                        })
-                .catch( ex => console.log('parsing failed', ex) );
+      return new Promise((resolve, reject) => {
+        VK.Api.call('wall.get', {
+          owner_id,
+          offset,
+          count,
+          v: API_VERSION,
+          access_token: user_access_token}, (data) => {
+            resolve(data.response);
+          });
+      });
     };
+
+    execute({user_access_token, code}) {
+      return new Promise((resolve, reject) => {
+        VK.Api.call('execute', {code: code}, (response) => {
+          resolve(response);
+        })
+      });
+    }
+
+    bundleQuery(method: string, posts?: Array<any>, user_id?, owner_id?) {
+      switch (method) {
+        case 'likes.isLiked':
+          return(`return[${posts.map((post) =>
+              `API.${method}({user_id:${user_id},owner_id:${owner_id},type:"post",item_id:${post.id},v:${API_VERSION}})`).toString()}];`
+          );
+      }
+    }
 
     formatPost(post, response) {
       post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
@@ -167,7 +136,7 @@ export class AppService {
                         user_access_token: user_access_token,
                         offset: offset })
                       .then((response: any) => {
-                        return response.posts;
+                        return response.items;
                       })
           }
 

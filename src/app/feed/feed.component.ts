@@ -87,7 +87,7 @@ export class FeedComponent implements OnInit {
     getUserAndUserGroups({user_id, user_access_token}) {
       this.appService
       .getUserData({user_id: user_id, user_access_token: user_access_token})
-      .then((response) => {
+      .then((response: any) => {
         if (!response) {
           this.showError('Не удалось получить информацию о пользователе', 'истёк срок действия авторизации');
         } else if ('error' in response && 'error_description' in response) {
@@ -103,8 +103,8 @@ export class FeedComponent implements OnInit {
               count: this.MAX_ALLOWED})
               .then((groups_response: any) => {
                 if (Boolean(groups_response)) {
-                  this.state.groups.available = groups_response.available;
-                  this.state.groups.current = groups_response.groups.filter((group) => {
+                  this.state.groups.available = groups_response.count;
+                  this.state.groups.current = groups_response.items.filter((group) => {
                     if (!group.deactivated) {
                       return group;
                     }
