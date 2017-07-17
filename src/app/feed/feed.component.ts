@@ -22,14 +22,13 @@ export class FeedComponent implements OnInit {
     },
     posts: <any>{
       liked: [],
-      skipped: []
+      skipped: [],
+      all: []
     },
     page: <any>{
       radio: 'user_groups', // 'user_groups' == from the list, 'other_groups' == show input text field
       tab: <number>1, // current selected tab
       counter: <number>0, // how much posts has been filtered by filterLikedPosts()
-      qcounter: <number>0, // how much queue has been made
-      timer: <number>0, // timeleft before filterLikedPosts() will be finished (approximate, in miliseconds)
       p: <number>1, // current page of 'Посты' tab's pagination
     }
   }
@@ -51,17 +50,17 @@ export class FeedComponent implements OnInit {
       }
       this.state.posts.skipped = [];
       this.state.posts.liked = [];
+      this.state.posts.all = [];
       this.state.groups.offset = 0;
       this.state.groups.available = 0;
       this.state.page.timer = 0;
       this.state.page.counter = 0;
-      this.state.page.qcounter = 0;
       this.state.page.tab = 0;
     }
 
     showOriginal(post) {
       if (post.post_type === 'post') {
-        window.open(`https://vk.com/wall${post.from_id}_${post.id}`, '_blank');
+        window.open(`https://vk.com/wall${post.to_id}_${post.id}`, '_blank');
       }
     }
 
@@ -74,10 +73,6 @@ export class FeedComponent implements OnInit {
       } else {
         this.snackBar.open('Что-то пошло не так', 'ОК');
       }
-    }
-
-    showTimer = (timer, counter, TIMEOUT_STEP) => {
-      return ((timer - counter * TIMEOUT_STEP) / 1000) + ' сек'; // TODO: format this time
     }
 
     backToUserForm(event: Event) {
@@ -154,13 +149,17 @@ export class FeedComponent implements OnInit {
                 posts: temparray
               })
               .then((likes) => {
-                this.state.page.qcounter += 1;
-                for (const post of temparray) {
-                  if (likes[temparray.indexOf(post)].liked === 1) {
-                    this.state.posts.liked
-                      .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
+                if (likes) {
+                  for (const post of temparray) {
+                    if (likes[temparray.indexOf(post)].liked === 1) {
+                      this.state.posts.liked
+                        .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
+                    }
+                    this.state.page.counter += 1;
                   }
-                  this.state.page.counter += 1;
+                } else {
+                  this.state.page.counter += temparray.length;
+                  this.state.posts.skipped.concat(temparray);
                 }
                 if (this.state.page.counter === posts.length) {
                   this.state.isCheckingLikes = false;
@@ -172,7 +171,6 @@ export class FeedComponent implements OnInit {
               });
           }, timeleft);
         }
-      this.state.page.timer = timeleft;
       } else {
         this.showError('Ошибка', 'не получилось запросить посты');
       }
@@ -181,6 +179,7 @@ export class FeedComponent implements OnInit {
   getLikedPosts({owner_id, user_id, user_access_token, count}) {
     this.appService.getAllWallPosts({ owner_id, user_id, user_access_token, count })
       .then((posts: any) => {
+        this.state.posts.all = posts;
         this.filterLikedPosts({ owner_id, user_id, user_access_token, posts })
       });
   }

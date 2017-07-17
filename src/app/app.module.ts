@@ -4,6 +4,7 @@ import { MaterialModule } from '@angular/material';
 import { FormsModule } from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {NgxPaginationModule} from 'ngx-pagination';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
@@ -27,6 +28,7 @@ import { routing, appRoutingProviders } from './app.routes';
     MaterialModule,
     BrowserAnimationsModule,
     NgxPaginationModule,
+    Ng2SearchPipeModule,
     FormsModule,
     routing
   ],

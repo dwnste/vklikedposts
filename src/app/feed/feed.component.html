@@ -1,14 +1,17 @@
 <!--The whole content below can be removed with the new code.-->
 <div>
   <div class="progress-bar-container">
-    <md-progress-bar *ngIf="appService.state.isGettingPosts" mode="determinate" [value]="appService.state.wallGetResultsPercentage" color="accent"></md-progress-bar>
+    <md-progress-bar 
+      *ngIf="appService.state.isGettingPosts || state.isCheckingLikes" 
+      mode="buffer" 
+      [bufferValue]="appService.state.wallGetResultsPercentage" 
+      [value]="state.page.counter / state.posts.all.length * 100 || 0" 
+      color="accent">
+    </md-progress-bar>
   </div>
   <md-toolbar color="primary">
     <span>
       <a [routerLink]="['/']">VK Liked Posts</a>
-      <span *ngIf="((state.page.timer - state.page.qcounter * TIMEOUT_STEP) / 1000) > 0"> | 
-        <i class="material-icons md-18"> access_time </i> {{ showTimer(state.page.timer, state.page.qcounter, TIMEOUT_STEP) }}
-      </span>
       <span *ngIf="state.posts.skipped.length"> |
         <i class="material-icons md-18"> error_outline </i> {{ state.posts.skipped.length }}
       </span>
@@ -24,6 +27,11 @@
   <md-tab-group [selectedIndex]="state.page.tab" *ngIf="authService.loggedIn()">
 
     <md-tab label="Посты" *ngIf="state.posts.liked.length">
+    <md-card>
+      <md-input-container class="md-block">
+          <input mdInput [(ngModel)]="term" type="text" placeholder="Поиск">
+      </md-input-container>
+    </md-card>
     <div class="wrapper__pagination_controls">
         <pagination-controls 
           class="pagination_controls"
@@ -33,7 +41,7 @@
           >
         </pagination-controls>
       </div>
-      <md-card *ngFor="let post of state.posts.liked | paginate: { itemsPerPage: 5, currentPage: state.page.p }">
+      <md-card *ngFor="let post of state.posts.liked | filter:term | paginate: { itemsPerPage: 5, currentPage: state.page.p }">
       <md-card-header>
         <md-card-title>{{post.date}}</md-card-title>
         <md-card-subtitle *ngIf="post.reposted === 1">
