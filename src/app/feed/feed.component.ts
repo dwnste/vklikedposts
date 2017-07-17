@@ -61,7 +61,7 @@ export class FeedComponent implements OnInit {
 
     showOriginal(post) {
       if (post.post_type === 'post') {
-        window.open(`https://vk.com/wall${post.to_id}_${post.id}`, '_blank');
+        window.open(`https://vk.com/wall${post.from_id}_${post.id}`, '_blank');
       }
     }
 
