@@ -13,6 +13,7 @@ VK.init({apiId: 6099251});
 export class AppService {
     state = {
         isGettingPosts: false,
+        wallGetResultsPercentage: 0
     }
 
     getUserData({user_id, user_access_token}) {
@@ -73,7 +74,6 @@ export class AppService {
     }
 
     formatPost(post, response) {
-      post.text = post.text.replace(/<br\s*\/?>/gi, ' ');
       post.date = moment(post.date * 1000).format('LL');
       post.reposted = response.copied;
       return post;
@@ -87,10 +87,11 @@ export class AppService {
 
         let results = [];
 
-        const queue = async.queue(function (offset, callback) {
+        const queue = async.queue((offset, callback) => {
           return httpRequest(offset)
                   .then((result) => {
                     results = results.concat(result);
+                    this.state.wallGetResultsPercentage = Math.round(results.length / count * 100);
                     return callback();
                   });
         }, maxRPS);

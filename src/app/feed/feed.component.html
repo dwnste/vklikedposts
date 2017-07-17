@@ -1,7 +1,7 @@
 <!--The whole content below can be removed with the new code.-->
 <div>
   <div class="progress-bar-container">
-    <md-progress-bar *ngIf="appService.state.isGettingPosts" mode="indeterminate" color="secondary"></md-progress-bar>
+    <md-progress-bar *ngIf="appService.state.isGettingPosts" mode="determinate" [value]="appService.state.wallGetResultsPercentage" color="accent"></md-progress-bar>
   </div>
   <md-toolbar color="primary">
     <span>
@@ -48,10 +48,8 @@
         </span>
       </div>
       <!-- ^^^^^ -->
-        <md-card-content>
-          <p>
-            {{ post.text }}
-          </p>
+        <md-card-content *ngFor="let paragraph of post.text.split('\n')">
+          <p>{{ paragraph }}</p>
         </md-card-content>
         <md-card-actions>
           <button (click)="showOriginal(post)" md-button>
