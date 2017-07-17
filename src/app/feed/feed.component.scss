@@ -56,6 +56,15 @@ i {
 
 md-card {
     width: 100%;
+    .mat-card-image {
+        width: 100%;
+        margin: 0 auto;
+
+        &:first-child{
+            margin-top: 0px;
+        }
+    }
+
     &.mat-card {
         padding: 24px 0;
     }
@@ -92,6 +101,11 @@ md-option {
     md-card {
         width: 600px;
         margin: 5px auto;
+
+        .mat-card-image {
+            width: calc(100% + 48px);
+            margin: 0 -24px 16px -24px;
+        }
 
         &.mat-card {
             padding: 24px;

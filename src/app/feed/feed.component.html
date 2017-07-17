@@ -41,8 +41,12 @@
         </md-card-subtitle>
       </md-card-header>
       <!-- FIX ME -->
-        <img *ngIf="post.attachments && post.attachments[0].type === 'link'" md-card-image src="{{post.attachments[0].link.photo.photo_604}}" alt="">
-        <img *ngIf="post.attachments && post.attachments[0].type === 'photo'" md-card-image src="{{post.attachments[0].photo.photo_604}}" alt="">
+      <div *ngIf="post.attachments">
+        <span *ngFor="let attachment of post.attachments">
+          <img *ngIf="attachment.type === 'link'" md-card-image src="{{attachment.link.photo.photo_604}}" alt="">
+          <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
+        </span>
+      </div>
       <!-- ^^^^^ -->
         <md-card-content>
           <p>
@@ -52,6 +56,9 @@
         <md-card-actions>
           <button (click)="showOriginal(post)" md-button>
             <i class="material-icons md-18"> visibility </i> ОРИГИНАЛ
+          </button>
+          <button md-button>
+              <i class="material-icons md-18"> favorite </i> {{post.likes.count}}
           </button>
         </md-card-actions>
 
