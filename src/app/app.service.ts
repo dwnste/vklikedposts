@@ -74,8 +74,13 @@ export class AppService {
     }
 
     formatPost(post, response) {
+      const replacer = (match) => {
+        return `https://vk.com/${(match.match(/^(.*?)\|/)[1].substring(1))}`;
+      }
+
       post.date = moment(post.date * 1000).format('LL');
       post.reposted = response.copied;
+      post.text = post.text.replace(/\[(.*)\|(.*)\]/g, replacer);
       return post;
     }
 
@@ -131,11 +136,13 @@ export class AppService {
 
     getAllWallPosts({owner_id, user_id, user_access_token, count}) {
         this.state.isGettingPosts = true;
+        /* FIXME */
         return this.getWallPosts({owner_id, user_access_token, count: 1, offset: 0})
           .then((posts: any) => {
             if (count > posts.count) {
               count = posts.count;
             }
+
             const httpRequest = (offset) => {
               return this.getWallPosts({
                             owner_id: owner_id,
