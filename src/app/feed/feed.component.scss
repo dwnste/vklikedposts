@@ -36,6 +36,14 @@ i {
     -moz-osx-font-smoothing: grayscale;
 }
 
+md-card-content {
+    margin: 35px 0;
+}
+
+:host /deep/ .mat-tab-body-content {
+    overflow: hidden;
+}
+
 .wrapper__pagination_controls {
     display: flex;
     flex-direction: column;
