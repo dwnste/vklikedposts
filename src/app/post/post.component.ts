@@ -1,13 +1,14 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-post',
   templateUrl: './post.component.html',
   styleUrls: ['./post.component.scss']
 })
-export class PostComponent implements OnInit {
+export class PostComponent {
 
   @Input() post: any;
+  showHidden = false;
 
   constructor() { }
 
@@ -51,7 +52,15 @@ export class PostComponent implements OnInit {
     window.open(`https://www.youtube.com/results?search_query=${audio.artist} - ${audio.title}`, '_blank');
   }
 
-  ngOnInit() {
+  textFormatter(text) {
+    const paragraphs = text.split('\n');
+    if (paragraphs.length - 3 > 0) {
+      return {
+        text: paragraphs.slice(1, 3),
+        hidden: paragraphs.slice(3)
+      }
+    }
+    return {text: paragraphs}
   }
 
 }

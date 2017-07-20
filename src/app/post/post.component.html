@@ -27,8 +27,15 @@
         </md-nav-list>
     </div>
     <!-- ^^^^^ -->
-      <md-card-content *ngFor="let paragraph of post.text.split('\n')">
-        <p>{{ paragraph }}</p>
+      <md-card-content *ngIf="post.text">
+        <div *ngFor="let paragraph of textFormatter(post.text).text">
+          <p>{{ paragraph }}</p>
+        </div>
+        <div *ngIf="showHidden">
+          <div *ngFor="let paragraph of textFormatter(post.text).hidden">
+              <p>{{ paragraph }}</p>
+          </div>
+        </div>
       </md-card-content>
       <md-card-actions>
         <button (click)="showOriginal(post)" md-button>
@@ -36,6 +43,12 @@
         </button>
         <button md-button>
             <i class="material-icons md-18"> favorite </i> {{post.likes.count}}
+        </button>
+        <button (click)="showHidden = !showHidden" md-button style="float: right" *ngIf="textFormatter(post.text).hidden && !showHidden">
+            <i class="material-icons md-18"> keyboard_arrow_down </i> РАСКРЫТЬ
+        </button>
+        <button (click)="showHidden = !showHidden" md-button style="float: right" *ngIf="textFormatter(post.text).hidden && showHidden">
+            <i class="material-icons md-18"> keyboard_arrow_up </i> СКРЫТЬ
         </button>
       </md-card-actions>
 
