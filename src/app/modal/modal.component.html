@@ -1,0 +1,11 @@
+<md-nav-list>
+    <md-list-item *ngFor="let item of items" (click)="openUserPage(item.uid)">
+        <img src="{{item.photo_50}}" alt="">
+        <h4 md-line>{{item.first_name}}</h4>
+        <p md-line> {{item.last_name}} </p>
+    </md-list-item>
+    <md-list-item *ngIf="count > 100 && offset < count" (click)="getMoreLikes()">
+      <p>Показать ещё</p>
+    </md-list-item>
+</md-nav-list>
+<button md-button md-dialog-close>Закрыть</button>

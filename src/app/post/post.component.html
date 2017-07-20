@@ -41,7 +41,7 @@
         <button (click)="showOriginal(post)" md-button>
           <i class="material-icons md-18"> visibility </i> ОРИГИНАЛ
         </button>
-        <button md-button>
+        <button (click)="likeClick(post)" md-button>
             <i class="material-icons md-18"> favorite </i> {{post.likes.count}}
         </button>
         <button (click)="showHidden = !showHidden" md-button style="float: right" *ngIf="textFormatter(post.text).hidden && !showHidden">

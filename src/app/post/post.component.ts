@@ -1,4 +1,7 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewContainerRef } from '@angular/core';
+import { MdDialog, MdDialogRef, MdDialogConfig } from '@angular/material';
+import { ModalComponent } from '../modal/modal.component';
+
 
 @Component({
   selector: 'app-post',
@@ -10,7 +13,10 @@ export class PostComponent {
   @Input() post: any;
   showHidden = false;
 
-  constructor() { }
+  constructor(
+    public dialog: MdDialog,
+    public vcr: ViewContainerRef
+  ) { }
 
   showOriginal(post) {
     if (post.post_type === 'post') {
@@ -61,6 +67,13 @@ export class PostComponent {
       }
     }
     return {text: paragraphs, hidden: ''}
+  }
+
+  likeClick(post) {
+      const config = new MdDialogConfig();
+      config.viewContainerRef = this.vcr;
+      const dialogRef: MdDialogRef<ModalComponent> = this.dialog.open(ModalComponent, config);
+      dialogRef.componentInstance.post = post;
   }
 
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MdDialog, MdDialogRef, MdSnackBar, MdProgressBarModule } from '@angular/material';
-import {NgxPaginationModule} from 'ngx-pagination';
+import { MdSnackBar, MdProgressBarModule } from '@angular/material';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AppService } from '../app.service';
 import { AuthService } from '../auth/auth.service';

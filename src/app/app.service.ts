@@ -16,6 +16,23 @@ export class AppService {
         wallGetResultsPercentage: 0
     }
 
+    getLikes({owner_id, item_id, user_access_token, offset = 0, count = 100}) {
+      return new Promise((resolve, reject) => {
+        VK.Api.call('likes.getList', {
+          owner_id,
+          item_id,
+          type: 'post',
+          offset,
+          count,
+          extended: 1,
+          fields: 'photo_50',
+          version: API_VERSION,
+          access_token: user_access_token}, (data) => {
+            resolve(data.response);
+          });
+      });
+    }
+
     getUserData({user_id, user_access_token}) {
       return new Promise((resolve, reject) => {
         VK.Api.call('users.get', {

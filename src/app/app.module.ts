@@ -18,6 +18,7 @@ import 'hammerjs';
 
 import { routing, appRoutingProviders } from './app.routes';
 import { PostComponent } from './post/post.component';
+import { ModalComponent } from './modal/modal.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { PostComponent } from './post/post.component';
     AuthComponent,
     FeedComponent,
     PostComponent,
+    ModalComponent,
   ],
   imports: [
     BrowserModule,
@@ -37,6 +39,7 @@ import { PostComponent } from './post/post.component';
     routing
   ],
   providers: [ AppService, AuthService, appRoutingProviders ],
-  bootstrap: [ AppComponent ]
+  bootstrap: [ AppComponent ],
+  entryComponents: [ ModalComponent ]
 })
 export class AppModule { }
