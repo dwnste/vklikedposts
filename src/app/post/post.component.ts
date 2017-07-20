@@ -52,15 +52,15 @@ export class PostComponent {
     window.open(`https://www.youtube.com/results?search_query=${audio.artist} - ${audio.title}`, '_blank');
   }
 
-  textFormatter(text) {
+  textFormatter(text: any) {
     const paragraphs = text.split('\n');
-    if (paragraphs.length - 3 > 0) {
+    if (paragraphs.length - 5 > 0) {
       return {
-        text: paragraphs.slice(1, 3),
-        hidden: paragraphs.slice(3)
+        text: paragraphs.slice(1, 5),
+        hidden: paragraphs.slice(5)
       }
     }
-    return {text: paragraphs}
+    return {text: paragraphs, hidden: ''}
   }
 
 }
