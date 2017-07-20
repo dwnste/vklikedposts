@@ -1,0 +1,42 @@
+<md-card>
+    <md-card-header>
+      <md-card-title>{{post.date}}</md-card-title>
+      <md-card-subtitle *ngIf="post.reposted === 1">
+        <i class="material-icons md-18"> reply </i> репост
+      </md-card-subtitle>
+    </md-card-header>
+    <!-- FIX ME -->
+    <div *ngIf="post.attachments">
+      <span *ngIf="checkPhotoAttachments(post.attachments).length > 1">
+        <img md-card-image src="{{checkPhotoAttachments(post.attachments)[0].image}}" alt="">
+        <ng2-image-gallery [images]="checkPhotoAttachments(post.attachments).slice(1)"></ng2-image-gallery> 
+      </span>
+      <span *ngIf="checkPhotoAttachments(post.attachments).length === 1">
+        <span *ngFor="let attachment of post.attachments">
+          <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
+        </span>
+      </span>
+        <md-nav-list *ngIf="checkAttachments(post.attachments, 'audio')">
+          <span *ngFor="let attachment of post.attachments">
+            <md-list-item *ngIf="attachment.type === 'audio'" (click)="clickOnAudio(attachment.audio)">
+                <md-icon  md-list-icon>play_circle_filled</md-icon>
+                <h4 md-line>{{attachment.audio.artist}}</h4>
+                <p md-line> {{attachment.audio.title}} </p>
+            </md-list-item>
+          </span>
+        </md-nav-list>
+    </div>
+    <!-- ^^^^^ -->
+      <md-card-content *ngFor="let paragraph of post.text.split('\n')">
+        <p>{{ paragraph }}</p>
+      </md-card-content>
+      <md-card-actions>
+        <button (click)="showOriginal(post)" md-button>
+          <i class="material-icons md-18"> visibility </i> ОРИГИНАЛ
+        </button>
+        <button md-button>
+            <i class="material-icons md-18"> favorite </i> {{post.likes.count}}
+        </button>
+      </md-card-actions>
+
+    </md-card>

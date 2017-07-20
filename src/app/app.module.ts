@@ -17,12 +17,14 @@ import { AuthService } from './auth/auth.service';
 import 'hammerjs';
 
 import { routing, appRoutingProviders } from './app.routes';
+import { PostComponent } from './post/post.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     AuthComponent,
     FeedComponent,
+    PostComponent,
   ],
   imports: [
     BrowserModule,

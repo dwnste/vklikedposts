@@ -40,7 +40,7 @@ i {
     display: flex;
     flex-direction: column;
     .pagination_controls {
-        padding: 0;
+        padding: 15px;
         margin: 0 auto;
     }
 }
@@ -51,6 +51,15 @@ i {
     left: 0;
     right: 0;
     height: 4px;
+}
+
+.post_wrapper {
+    padding: 24px 0;
+}
+
+.input__wrapper {
+    width: 90%;
+    margin: 0 auto;
 }
 
 md-card {
@@ -107,7 +116,7 @@ md-option {
         }
 
         &.mat-card {
-            padding: 24px;
+            padding: 24px 0;
         }
 
         div.mat-card-avatar{

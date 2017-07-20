@@ -59,12 +59,6 @@ export class FeedComponent implements OnInit {
       this.appService.state.wallGetResultsPercentage = 0
     }
 
-    showOriginal(post) {
-      if (post.post_type === 'post') {
-        window.open(`https://vk.com/wall${post.from_id}_${post.id}`, '_blank');
-      }
-    }
-
     showError(error?: string, error_description?: string) {
       if (error && error_description) {
         this.snackBar.open(
@@ -206,41 +200,6 @@ export class FeedComponent implements OnInit {
       user_access_token: this.authService.cookies.access_token
     });
   }
-
-  checkAttachments(attachments: any, type: string) {
-    for (let attachment of attachments) {
-      if (attachment.type === type) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  checkPhotoAttachments(attachments: any) {
-    const photoList = attachments.filter((attachment) => {
-      if (attachment.type === 'photo') {
-        return attachment.photo;
-      }
-    });
-
-    if (photoList.length === 1) {
-      return photoList;
-    } else if (photoList.length > 1) {
-      return photoList.map((element) => {
-        return {
-          thumbnail: element.photo.photo_75,
-          image: element.photo.photo_604,
-          text: element.photo.text
-        }
-      });
-    }
-    return [];
-  }
-
-  clickOnAudio(audio) {
-    window.open(`https://www.youtube.com/results?search_query=${audio.artist} - ${audio.title}`, '_blank');
-  }
-
 
   ngOnInit() {
     this.authService.update();
