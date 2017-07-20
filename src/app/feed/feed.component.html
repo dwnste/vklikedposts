@@ -50,8 +50,14 @@
       </md-card-header>
       <!-- FIX ME -->
       <div *ngIf="post.attachments">
-        <span *ngFor="let attachment of post.attachments">
-          <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
+        <span *ngIf="checkPhotoAttachments(post.attachments).length > 1">
+          <img md-card-image src="{{checkPhotoAttachments(post.attachments)[0].image}}" alt="">
+          <ng2-image-gallery [images]="checkPhotoAttachments(post.attachments).slice(1)"></ng2-image-gallery> 
+        </span>
+        <span *ngIf="checkPhotoAttachments(post.attachments).length === 1">
+          <span *ngFor="let attachment of post.attachments">
+            <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
+          </span>
         </span>
           <md-nav-list *ngIf="checkAttachments(post.attachments, 'audio')">
             <span *ngFor="let attachment of post.attachments">

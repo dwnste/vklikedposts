@@ -153,7 +153,6 @@ export class FeedComponent implements OnInit {
                 if (likes) {
                   for (const post of temparray) {
                     if (likes[temparray.indexOf(post)].liked === 1) {
-                      console.log(post)
                       this.state.posts.liked
                         .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
                     }
@@ -217,9 +216,31 @@ export class FeedComponent implements OnInit {
     return false;
   }
 
+  checkPhotoAttachments(attachments: any) {
+    const photoList = attachments.filter((attachment) => {
+      if (attachment.type === 'photo') {
+        return attachment.photo;
+      }
+    });
+
+    if (photoList.length === 1) {
+      return photoList;
+    } else if (photoList.length > 1) {
+      return photoList.map((element) => {
+        return {
+          thumbnail: element.photo.photo_75,
+          image: element.photo.photo_604,
+          text: element.photo.text
+        }
+      });
+    }
+    return [];
+  }
+
   clickOnAudio(audio) {
     window.open(`https://www.youtube.com/results?search_query=${audio.artist} - ${audio.title}`, '_blank');
   }
+
 
   ngOnInit() {
     this.authService.update();
