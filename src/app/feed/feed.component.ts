@@ -217,6 +217,10 @@ export class FeedComponent implements OnInit {
     return false;
   }
 
+  clickOnAudio(audio) {
+    window.open(`https://www.youtube.com/results?search_query=${audio.artist} - ${audio.title}`, '_blank');
+  }
+
   ngOnInit() {
     this.authService.update();
   }

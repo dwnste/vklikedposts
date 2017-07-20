@@ -55,7 +55,7 @@
         </span>
           <md-nav-list *ngIf="checkAttachments(post.attachments, 'audio')">
             <span *ngFor="let attachment of post.attachments">
-              <md-list-item *ngIf="attachment.type === 'audio'">
+              <md-list-item *ngIf="attachment.type === 'audio'" (click)="clickOnAudio(attachment.audio)">
                   <md-icon  md-list-icon>play_circle_filled</md-icon>
                   <h4 md-line>{{attachment.audio.artist}}</h4>
                   <p md-line> {{attachment.audio.title}} </p>
