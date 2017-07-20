@@ -51,9 +51,17 @@
       <!-- FIX ME -->
       <div *ngIf="post.attachments">
         <span *ngFor="let attachment of post.attachments">
-          <img *ngIf="attachment.type === 'link'" sm-media align="right" src="{{attachment.link.photo.photo_75}}" alt="">
           <img *ngIf="attachment.type === 'photo'" md-card-image src="{{attachment.photo.photo_604}}" alt="">
         </span>
+          <md-nav-list *ngIf="checkAttachments(post.attachments, 'audio')">
+            <span *ngFor="let attachment of post.attachments">
+              <md-list-item *ngIf="attachment.type === 'audio'">
+                  <md-icon  md-list-icon>play_circle_filled</md-icon>
+                  <h4 md-line>{{attachment.audio.artist}}</h4>
+                  <p md-line> {{attachment.audio.title}} </p>
+              </md-list-item>
+            </span>
+          </md-nav-list>
       </div>
       <!-- ^^^^^ -->
         <md-card-content *ngFor="let paragraph of post.text.split('\n')">

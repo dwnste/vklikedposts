@@ -153,6 +153,7 @@ export class FeedComponent implements OnInit {
                 if (likes) {
                   for (const post of temparray) {
                     if (likes[temparray.indexOf(post)].liked === 1) {
+                      console.log(post)
                       this.state.posts.liked
                         .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
                     }
@@ -205,6 +206,15 @@ export class FeedComponent implements OnInit {
       count: data.form.value.posts_count,
       user_access_token: this.authService.cookies.access_token
     });
+  }
+
+  checkAttachments(attachments: any, type: string) {
+    for (let attachment of attachments) {
+      if (attachment.type === type) {
+        return true;
+      }
+    }
+    return false;
   }
 
   ngOnInit() {
