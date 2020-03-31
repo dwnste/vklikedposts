@@ -53,6 +53,7 @@
     "ng2-image-gallery": "^0.3.15",
     "ng2-search-filter": "^0.3.1",
     "ngx-pagination": "^3.0.1",
+    "node-sass": "^4.13.1",
     "protractor": "~5.1.2",
     "query-string": "^4.3.4",
     "ts-node": "~3.0.4",

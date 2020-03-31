@@ -26,7 +26,7 @@ export class AppService {
           count,
           extended: 1,
           fields: 'photo_50',
-          version: API_VERSION,
+          v: API_VERSION,
           access_token: user_access_token}, (data) => {
             resolve(data.response);
           });
@@ -39,7 +39,7 @@ export class AppService {
           user_ids: user_id,
           name_case: 'Nom',
           fields: 'photo_50,online',
-          version: API_VERSION,
+          v: API_VERSION,
           access_token: user_access_token}, (data) => {
             resolve(data.response);
           });

@@ -58,7 +58,7 @@
 
     </md-tab>
 
-    <md-tab label="Пользователь" *ngIf="!state.user.uid || state.user.deactivated">
+    <md-tab label="Пользователь" *ngIf="!state.user.id || state.user.deactivated">
       <md-card>
         <md-card-content>
           <form novalidate (submit)="submitUserForm($event, userForm.value)" #userForm="ngForm">
@@ -74,7 +74,7 @@
 
     </md-tab>
 
-    <md-tab label="Поиск лайков" *ngIf="state.user.uid && !state.user.deactivated">
+    <md-tab label="Поиск лайков" *ngIf="state.user.id && !state.user.deactivated">
       <md-card>
         <md-card-header>
           <div md-card-avatar><img src="{{state.user.photo_50}}" alt=""></div>

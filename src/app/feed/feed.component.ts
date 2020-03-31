@@ -88,17 +88,13 @@ export class FeedComponent implements OnInit {
             this.showError('Не удалось получить данные о пользователе', `профиль имеет статус: ${this.state.user.deactivated}`)
           } else {
             this.appService
-            .getUserGroups({user_id: this.state.user.uid,
+            .getUserGroups({user_id,
               user_access_token: this.authService.cookies.access_token,
               count: this.MAX_ALLOWED})
               .then((groups_response: any) => {
                 if (Boolean(groups_response)) {
                   this.state.groups.available = groups_response.count;
-                  this.state.groups.current = groups_response.items.filter((group) => {
-                    if (!group.deactivated) {
-                      return group;
-                    }
-                  });
+                  this.state.groups.current = groups_response.items;
                   if (!this.state.groups.current.length || !Boolean(groups_response)) {
                     this.state.page.radio = 'other_groups';
                     this.state.groups.current = [];
@@ -113,7 +109,7 @@ export class FeedComponent implements OnInit {
     getMoreGroups() {
       this.state.groups.offset += this.MAX_ALLOWED;
       this.appService
-        .getUserGroups({user_id: this.state.user.uid,
+        .getUserGroups({user_id: this.state.user.id,
                         user_access_token: this.authService.cookies.access_token,
                         count: this.MAX_ALLOWED, offset: this.state.groups.offset})
         .then((response: any) => {
@@ -195,7 +191,7 @@ export class FeedComponent implements OnInit {
     this.setDefault(event);
     this.getLikedPosts({
       owner_id: data.form.value.group_id,
-      user_id: this.state.user.uid,
+      user_id: this.state.user.id,
       count: data.form.value.posts_count,
       user_access_token: this.authService.cookies.access_token
     });
