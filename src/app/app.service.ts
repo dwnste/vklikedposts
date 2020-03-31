@@ -75,7 +75,7 @@ export class AppService {
 
     execute({user_access_token, code}) {
       return new Promise((resolve, reject) => {
-        VK.Api.call('execute', {code: code}, (response) => {
+        VK.Api.call('execute', {code: code, v: API_VERSION}, (response) => {
           resolve(response);
         })
       });
