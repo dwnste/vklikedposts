@@ -8,7 +8,7 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "ghb": "ng build --target=production --env=prod --deploy-url=https://dwnste.github.io/vklikedposts/ --base-href=/vklikedposts/ && ln -s dist/index.html dist/404.html"
+    "ghb": "ng build --target=production --env=prod --deploy-url=https://dwnste.github.io/vklikedposts/ --base-href=/vklikedposts/"
   },
   "private": true,
   "dependencies": {
