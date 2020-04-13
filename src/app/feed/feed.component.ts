@@ -14,7 +14,7 @@ import { AuthService } from '../auth/auth.service';
 export class FeedComponent implements OnInit {
   state = {
     isCheckingLikes: false,
-    user: <any> {},
+    user: <any>{},
     groups: <any>{
       offset: 0,
       available: 0,
@@ -38,45 +38,45 @@ export class FeedComponent implements OnInit {
 
   constructor(public appService: AppService,
     public authService: AuthService,
-    public snackBar: MdSnackBar) {}
+    public snackBar: MdSnackBar) { }
 
-    setDefault(event?: Event, removeUserData?: boolean) {
-      if (event) {
-        event.preventDefault();
-      }
-      if (removeUserData) {
-        this.state.user = <any>{};
-        this.state.groups.current = [];
-      }
-      this.state.posts.skipped = [];
-      this.state.posts.liked = [];
-      this.state.posts.all = [];
-      this.state.groups.offset = 0;
-      this.state.groups.available = 0;
-      this.state.page.counter = 0;
-      this.state.page.tab = 0;
-
-      this.appService.state.wallGetResultsPercentage = 0
+  setDefault(event?: Event, removeUserData?: boolean) {
+    if (event) {
+      event.preventDefault();
     }
-
-    showError(error?: string, error_description?: string) {
-      if (error && error_description) {
-        this.snackBar.open(
-          `${error.replace('+', ' ')}: ${error_description.replace('+', ' ')}`,
-          'ОК'
-        );
-      } else {
-        this.snackBar.open('Что-то пошло не так', 'ОК');
-      }
+    if (removeUserData) {
+      this.state.user = <any>{};
+      this.state.groups.current = [];
     }
+    this.state.posts.skipped = [];
+    this.state.posts.liked = [];
+    this.state.posts.all = [];
+    this.state.groups.offset = 0;
+    this.state.groups.available = 0;
+    this.state.page.counter = 0;
+    this.state.page.tab = 0;
 
-    backToUserForm(event: Event) {
-      this.setDefault(event, true);
+    this.appService.state.wallGetResultsPercentage = 0
+  }
+
+  showError(error?: string, error_description?: string) {
+    if (error && error_description) {
+      this.snackBar.open(
+        `${error.replace('+', ' ')}: ${error_description.replace('+', ' ')}`,
+        'ОК'
+      );
+    } else {
+      this.snackBar.open('Что-то пошло не так', 'ОК');
     }
+  }
 
-    getUserAndUserGroups({user_id, user_access_token}) {
-      this.appService
-      .getUserData({user_id: user_id, user_access_token: user_access_token})
+  backToUserForm(event: Event) {
+    this.setDefault(event, true);
+  }
+
+  getUserAndUserGroups({ user_id, user_access_token }) {
+    this.appService
+      .getUserData({ user_id: user_id, user_access_token: user_access_token })
       .then((response: any) => {
         if (!response) {
           this.showError('Не удалось получить информацию о пользователе', 'истёк срок действия авторизации');
@@ -88,86 +88,92 @@ export class FeedComponent implements OnInit {
             this.showError('Не удалось получить данные о пользователе', `профиль имеет статус: ${this.state.user.deactivated}`)
           } else {
             this.appService
-            .getUserGroups({user_id,
-              user_access_token: this.authService.cookies.access_token,
-              count: this.MAX_ALLOWED})
+              .getUserGroups({
+                user_id,
+                user_access_token: this.authService.cookies.access_token,
+                count: this.MAX_ALLOWED
+              })
               .then((groups_response: any) => {
+                console.log(groups_response);
                 if (Boolean(groups_response)) {
                   this.state.groups.available = groups_response.count;
                   this.state.groups.current = groups_response.items;
-                  if (!this.state.groups.current.length || !Boolean(groups_response)) {
-                    this.state.page.radio = 'other_groups';
-                    this.state.groups.current = [];
-                  }
+
+                  return;
                 }
+
+                this.state.page.radio = 'other_groups';
+                this.state.groups.current = [];
               });
-            }
           }
-        });
-      }
-
-    getMoreGroups() {
-      this.state.groups.offset += this.MAX_ALLOWED;
-      this.appService
-        .getUserGroups({user_id: this.state.user.id,
-                        user_access_token: this.authService.cookies.access_token,
-                        count: this.MAX_ALLOWED, offset: this.state.groups.offset})
-        .then((response: any) => {
-          if (response) {
-            const groupList = response.items.filter((group) => {
-              if (!group.deactivated) {
-                this.state.groups.current.push(group);
-              }
-            });
-          }
-        });
-    }
-
-    filterLikedPosts({owner_id, user_id, user_access_token, posts}) {
-      this.state.isCheckingLikes = true;
-      if (posts) {
-        let timeleft = 0;
-        const chunk = 25;
-        for (let i = 0, j = posts.length; i < j; i += chunk) {
-          timeleft += this.TIMEOUT_STEP;
-          const temparray = posts.slice(i, i + chunk);
-          setTimeout(() => {
-            this.appService
-              .getAllLikedPosts({
-                owner_id,
-                user_id,
-                user_access_token,
-                posts: temparray
-              })
-              .then((likes) => {
-                if (likes) {
-                  for (const post of temparray) {
-                    if (likes[temparray.indexOf(post)].liked === 1) {
-                      this.state.posts.liked
-                        .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
-                    }
-                    this.state.page.counter += 1;
-                  }
-                } else {
-                  this.state.page.counter += temparray.length;
-                  this.state.posts.skipped.concat(temparray);
-                }
-                if (this.state.page.counter === posts.length) {
-                  this.state.isCheckingLikes = false;
-
-                  if (!this.state.posts.liked.length) {
-                    this.showError('Результат', 'не найдено ни одного поста с лайком');
-                  }
-                }
-              });
-          }, timeleft);
         }
-      } else {
-        this.showError('Ошибка', 'не получилось запросить посты');
-      }
+      });
   }
 
-  getLikedPosts({owner_id, user_id, user_access_token, count}) {
+  getMoreGroups() {
+    this.state.groups.offset += this.MAX_ALLOWED;
+    this.appService
+      .getUserGroups({
+        user_id: this.state.user.id,
+        user_access_token: this.authService.cookies.access_token,
+        count: this.MAX_ALLOWED, offset: this.state.groups.offset
+      })
+      .then((response: any) => {
+        if (!response) {
+          return [];
+        }
+
+        return response.items.filter((group) => {
+          return !group.deactivated
+        });
+      });
+  }
+
+  filterLikedPosts({ owner_id, user_id, user_access_token, posts }) {
+    this.state.isCheckingLikes = true;
+    if (posts) {
+      let timeleft = 0;
+      const chunk = 25;
+      for (let i = 0, j = posts.length; i < j; i += chunk) {
+        timeleft += this.TIMEOUT_STEP;
+        const temparray = posts.slice(i, i + chunk);
+        setTimeout(() => {
+          this.appService
+            .getAllLikedPosts({
+              owner_id,
+              user_id,
+              user_access_token,
+              posts: temparray
+            })
+            .then((likes) => {
+              if (likes) {
+                for (const post of temparray) {
+                  if (likes[temparray.indexOf(post)].liked === 1) {
+                    this.state.posts.liked
+                      .push(this.appService.formatPost(post, likes[temparray.indexOf(post)]))
+                  }
+                  this.state.page.counter += 1;
+                }
+              } else {
+                this.state.page.counter += temparray.length;
+                this.state.posts.skipped.concat(temparray);
+              }
+              if (this.state.page.counter === posts.length) {
+                this.state.isCheckingLikes = false;
+
+                if (!this.state.posts.liked.length) {
+                  this.showError('Результат', 'не найдено ни одного поста с лайком');
+                }
+              }
+            });
+        }, timeleft);
+      }
+    } else {
+      this.showError('Ошибка', 'не получилось запросить посты');
+    }
+  }
+
+  getLikedPosts({ owner_id, user_id, user_access_token, count }) {
     this.appService.getAllWallPosts({ owner_id, user_id, user_access_token, count })
       .then((posts: any) => {
         this.state.posts.all = posts;
